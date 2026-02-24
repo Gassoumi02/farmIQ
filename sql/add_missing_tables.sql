@@ -1,10 +1,13 @@
--- Missing tables for FarmIQ Marketplace
--- Run this script in phpMyAdmin to add the missing tables
+-- =====================================================
+-- FarmIQ - Missing Tables Script
+-- Run this in phpMyAdmin after importing the main dump
+-- to enable Marketplace, Calendar, and Cart features.
+-- =====================================================
 
 USE farmiq;
 
 -- =====================================================
--- SELLER PROFILES (Required for listings)
+-- SELLER PROFILES (Required for marketplace listings)
 -- =====================================================
 CREATE TABLE IF NOT EXISTS seller_profiles (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -25,7 +28,7 @@ CREATE TABLE IF NOT EXISTS seller_profiles (
 ) ENGINE=InnoDB;
 
 -- =====================================================
--- MARKETPLACE LISTINGS (Required by application)
+-- MARKETPLACE LISTINGS
 -- =====================================================
 CREATE TABLE IF NOT EXISTS listings (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -77,14 +80,75 @@ CREATE TABLE IF NOT EXISTS cart_items (
     UNIQUE KEY unique_cart_item (user_id, listing_id)
 ) ENGINE=InnoDB;
 
--- Insert a sample seller profile for user 1 (admin)
-INSERT IGNORE INTO seller_profiles (user_id, nom_boutique, description, wilaya, statut) 
-VALUES (1, 'Boutique Admin', 'Boutique principale FarmIQ', 'Tunis', 'APPROUVE');
+-- =====================================================
+-- ORDERS
+-- =====================================================
+CREATE TABLE IF NOT EXISTS orders (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    buyer_id INT NOT NULL,
+    seller_id INT NOT NULL,
+    statut ENUM('EN_ATTENTE','CONFIRME','EN_PREPARATION','EXPEDIE','LIVRE','ANNULE','REMBOURSE') DEFAULT 'EN_ATTENTE',
+    montant_total DECIMAL(10,2) NOT NULL,
+    frais_livraison DECIMAL(10,2) DEFAULT 0,
+    adresse_livraison TEXT,
+    notes TEXT,
+    code_suivi VARCHAR(50),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (buyer_id) REFERENCES users(id),
+    FOREIGN KEY (seller_id) REFERENCES seller_profiles(id),
+    INDEX idx_buyer (buyer_id),
+    INDEX idx_seller (seller_id),
+    INDEX idx_statut (statut)
+) ENGINE=InnoDB;
 
--- Insert sample listings
+-- =====================================================
+-- ORDER ITEMS
+-- =====================================================
+CREATE TABLE IF NOT EXISTS order_items (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT NOT NULL,
+    listing_id INT NOT NULL,
+    quantite DECIMAL(10,2) NOT NULL,
+    prix_unitaire DECIMAL(10,2) NOT NULL,
+    sous_total DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (listing_id) REFERENCES listings(id)
+) ENGINE=InnoDB;
+
+-- =====================================================
+-- TACHES (Calendar tasks)
+-- =====================================================
+CREATE TABLE IF NOT EXISTS taches (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    titre VARCHAR(200) NOT NULL,
+    description TEXT,
+    date_debut DATE NOT NULL,
+    date_fin DATE,
+    priorite ENUM('BASSE','MOYENNE','HAUTE','URGENTE') DEFAULT 'MOYENNE',
+    statut ENUM('A_FAIRE','EN_COURS','TERMINE','ANNULE') DEFAULT 'A_FAIRE',
+    type ENUM('PLANTATION','RECOLTE','IRRIGATION','TRAITEMENT','MAINTENANCE','AUTRE') DEFAULT 'AUTRE',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_date (date_debut),
+    INDEX idx_statut (statut)
+) ENGINE=InnoDB;
+
+-- =====================================================
+-- SAMPLE DATA (safe with INSERT IGNORE)
+-- =====================================================
+
+-- Seller profile for admin user
+INSERT IGNORE INTO seller_profiles (user_id, nom_boutique, description, wilaya, statut) 
+VALUES (1, 'Boutique FarmIQ Admin', 'Boutique principale FarmIQ', 'Tunis', 'APPROUVE');
+
+-- Sample listings
 INSERT IGNORE INTO listings (seller_id, titre, description, categorie, prix, unite, quantite_disponible, wilaya, statut) VALUES
 (1, 'Blé Dur Premium - Récolte 2025', 'Blé dur de haute qualité, idéal pour semoule et pâtes', 'RECOLTE', 85.00, 'quintal', 200, 'Bizerte', 'ACTIF'),
-(1, 'Semence de Pomme de Terre', 'Semence certifiées, variété Spunta', 'SEMENCE', 120.00, 'quintal', 50, 'Kef', 'ACTIF'),
-(1, 'Engrais Organique', 'Engrais naturel riche en azote', 'ENGRAIS', 45.00, 'sacs', 100, 'Sfax', 'ACTIF');
+(1, 'Semences de Pomme de Terre Spunta', 'Semences certifiées, variété Spunta - rendement élevé', 'SEMENCE', 120.00, 'quintal', 50, 'Kef', 'ACTIF'),
+(1, 'Engrais Organique Premium', 'Engrais naturel riche en azote et phosphore', 'ENGRAIS', 45.00, 'sac', 100, 'Sfax', 'ACTIF'),
+(1, 'Tomates Roma - Production locale', 'Tomates Roma fraîches de production locale', 'RECOLTE', 1.20, 'kg', 500, 'Nabeul', 'ACTIF'),
+(1, 'Pesticide Bio Neem', 'Pesticide biologique à base de neem, sans résidus', 'PESTICIDE', 35.00, 'litre', 80, 'Tunis', 'ACTIF');
 
-SELECT 'Tables created successfully!' as result;
+SELECT 'Marketplace tables created successfully!' AS result;

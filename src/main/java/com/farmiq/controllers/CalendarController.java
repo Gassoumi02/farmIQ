@@ -357,7 +357,75 @@ public class CalendarController implements Initializable {
     
     @FXML
     private void onAddTask() {
-        // This would open a dialog to create a new task
-        AlertUtil.showInfo("Nouvelle tâche", "Fonctionnalité de création de tâche à implémenter");
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser == null) return;
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Nouvelle tâche");
+        dialog.setHeaderText("Ajouter une tâche pour le " + selectedDate.format(
+                DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.FRENCH)));
+
+        GridPane grid = new GridPane();
+        grid.setHgap(12); grid.setVgap(12);
+        grid.setPadding(new Insets(20));
+
+        TextField fTitre = new TextField();
+        fTitre.setPromptText("Titre de la tâche"); fTitre.setPrefWidth(250);
+
+        TextArea fDesc = new TextArea();
+        fDesc.setPromptText("Description (optionnel)"); fDesc.setPrefRowCount(2);
+
+        ComboBox<String> fType = new ComboBox<>();
+        fType.getItems().addAll("PLANTATION","RECOLTE","IRRIGATION","TRAITEMENT","MAINTENANCE","AUTRE");
+        fType.setValue("AUTRE");
+
+        ComboBox<String> fPriorite = new ComboBox<>();
+        fPriorite.getItems().addAll("BASSE","MOYENNE","HAUTE","URGENTE");
+        fPriorite.setValue("MOYENNE");
+
+        DatePicker fDateFin = new DatePicker(selectedDate);
+
+        int r = 0;
+        grid.add(boldLabel("Titre *"),     0, r); grid.add(fTitre,    1, r++);
+        grid.add(boldLabel("Description"), 0, r); grid.add(fDesc,     1, r++);
+        grid.add(boldLabel("Type"),        0, r); grid.add(fType,     1, r++);
+        grid.add(boldLabel("Priorité"),    0, r); grid.add(fPriorite, 1, r++);
+        grid.add(boldLabel("Date fin"),    0, r); grid.add(fDateFin,  1, r++);
+
+        dialog.getDialogPane().setContent(grid);
+        ButtonType btnSave = new ButtonType("Créer", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(btnSave, ButtonType.CANCEL);
+
+        dialog.showAndWait().ifPresent(bt -> {
+            if (bt.getButtonData() != ButtonBar.ButtonData.OK_DONE) return;
+            String titre = fTitre.getText().trim();
+            if (titre.isEmpty()) { AlertUtil.showWarning("Validation", "Le titre est obligatoire."); return; }
+
+            Tache tache = new Tache();
+            tache.setUserId(currentUser.getId());
+            tache.setTitre(titre);
+            tache.setDescription(fDesc.getText().trim());
+            tache.setDateDebut(selectedDate);
+            tache.setDateFin(fDateFin.getValue());
+            tache.setType(fType.getValue());
+            tache.setPriorite(fPriorite.getValue());
+            tache.setStatut("A_FAIRE");
+
+            try {
+                tacheService.createTache(tache);
+                AlertUtil.showInfo("Succès", "Tâche créée avec succès!");
+                loadTasksForMonth();
+            } catch (Exception e) {
+                logger.error("Erreur création tâche", e);
+                AlertUtil.showError("Erreur", "Impossible de créer la tâche: " + e.getMessage());
+            }
+        });
+    }
+
+    private Label boldLabel(String text) {
+        Label l = new Label(text);
+        l.setFont(Font.font("System", FontWeight.BOLD, 12));
+        l.setMinWidth(100);
+        return l;
     }
 }

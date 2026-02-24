@@ -34,7 +34,7 @@
                 <!-- Ventes ce mois -->
                 <VBox GridPane.columnIndex="0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
                     <Label text="💰 Ventes ce mois" style="-fx-font-size: 12px; -fx-text-fill: #757575;"/>
-                    <Label fx:id="lblVentesMoins" text="12 450,00 TND" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;"/>
+                    <Label fx:id="lblVentesMois" text="12 450,00 TND" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;"/>
                 </VBox>
                 
                 <!-- Achats ce mois -->
