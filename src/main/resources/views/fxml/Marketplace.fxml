@@ -8,71 +8,114 @@
            fx:controller="com.farmiq.controllers.MarketplaceController"
            style="-fx-background-color: #F5F5F5;">
     
-    <VBox spacing="15" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
-          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
-          style="-fx-padding: 20;">
-        
-        <!-- Header -->
-        <HBox alignment="CENTER_LEFT" spacing="10">
-            <Label text="🛒 Marketplace" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Button text="🔄 Actualiser" onAction="#onRefresh" 
-                    style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 4;"/>
-        </HBox>
-        
-        <!-- Search and Filters -->
-        <VBox spacing="10">
-            <!-- Search Row -->
-            <HBox spacing="10">
-                <TextField fx:id="txtSearch" promptText="Rechercher un produit..." 
-                          prefWidth="400" style="-fx-background-radius: 4;"/>
-                <Button text="🔍 Rechercher" onAction="#onSearch" 
-                        style="-fx-background-color: #1565C0; -fx-text-fill: white; -fx-background-radius: 4;"/>
-            </HBox>
-            
-            <!-- Filters Row -->
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Label text="Catégorie:"/>
-                <ComboBox fx:id="cmbCategorie" prefWidth="150"/>
+    <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE"
+             AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+             AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+
+        <!-- TAB 1: BROWSE MARKETPLACE -->
+        <Tab text="🔍 Parcourir" fx:id="tabParcourir">
+            <VBox spacing="15" style="-fx-padding: 15; -fx-background-color: #F5F5F5;">
                 
-                <Label text="Wilaya:"/>
-                <ComboBox fx:id="cmbWilaya" prefWidth="150"/>
+                <!-- Header -->
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="🛒 Marketplace" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="🔄 Actualiser" onAction="#onRefresh" 
+                            style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 4;"/>
+                </HBox>
                 
-                <Label text="Prix:"/>
-                <Label fx:id="lblPrixMin" text="0 TND" style="-fx-font-size: 10px;"/>
-                <Slider fx:id="sliderPrixMin" min="0" max="1000" value="0" prefWidth="100"/>
-                <Label text="-" style="-fx-font-size: 10px;"/>
-                <Slider fx:id="sliderPrixMax" min="0" max="1000" value="1000" prefWidth="100"/>
-                <Label fx:id="lblPrixMax" text="1000 TND" style="-fx-font-size: 10px;"/>
+                <!-- Search and Filters -->
+                <VBox spacing="8">
+                    <HBox spacing="10">
+                        <TextField fx:id="txtSearch" promptText="Rechercher un produit..." 
+                                  prefWidth="380" style="-fx-background-radius: 4;"/>
+                        <Button text="🔍 Rechercher" onAction="#onSearch" 
+                                style="-fx-background-color: #1565C0; -fx-text-fill: white; -fx-background-radius: 4;"/>
+                    </HBox>
+                    
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Catégorie:"/>
+                        <ComboBox fx:id="cmbCategorie" prefWidth="150"/>
+                        <Label text="Wilaya:"/>
+                        <ComboBox fx:id="cmbWilaya" prefWidth="150"/>
+                        <Label text="Prix:" style="-fx-font-size: 10px;"/>
+                        <Label fx:id="lblPrixMin" text="0 TND" style="-fx-font-size: 10px;"/>
+                        <Slider fx:id="sliderPrixMin" min="0" max="1000" value="0" prefWidth="100"/>
+                        <Label text="-" style="-fx-font-size: 10px;"/>
+                        <Slider fx:id="sliderPrixMax" min="0" max="1000" value="1000" prefWidth="100"/>
+                        <Label fx:id="lblPrixMax" text="1000 TND" style="-fx-font-size: 10px;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label text="Trier par:"/>
+                        <ComboBox fx:id="cmbSortBy" prefWidth="150"/>
+                    </HBox>
+                </VBox>
                 
-                <Region HBox.hgrow="ALWAYS"/>
+                <!-- Results Info -->
+                <HBox>
+                    <Label fx:id="lblTotalResults" text="0 résultat(s) trouvé(s)" 
+                           style="-fx-text-fill: #757575;"/>
+                </HBox>
                 
-                <Label text="Trier par:"/>
-                <ComboBox fx:id="cmbSortBy" prefWidth="150"/>
-            </HBox>
-        </VBox>
-        
-        <!-- Results Info -->
-        <HBox>
-            <Label fx:id="lblTotalResults" text="0 résultat(s) trouvé(s)" 
-                   style="-fx-text-fill: #757575;"/>
-        </HBox>
-        
-        <!-- Listings Grid (using FlowPane) -->
-        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
-            <FlowPane fx:id="flowListings" hgap="15" vgap="15" 
-                     prefWidth="1200" prefHeight="600"/>
-        </ScrollPane>
-        
-        <!-- Pagination -->
-        <HBox spacing="10" alignment="CENTER">
-            <Button fx:id="btnPrev" text="← Précédent" onAction="#onPreviousPage"
-                    style="-fx-background-color: #E0E0E0; -fx-background-radius: 4;"/>
-            <Label fx:id="lblPageInfo" text="Page 1 / 1" 
-                   style="-fx-font-size: 14px;"/>
-            <Button fx:id="btnNext" text="Suivant →" onAction="#onNextPage"
-                    style="-fx-background-color: #E0E0E0; -fx-background-radius: 4;"/>
-        </HBox>
-        
-    </VBox>
+                <!-- Listings Grid -->
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" prefHeight="430">
+                    <FlowPane fx:id="flowListings" hgap="15" vgap="15" prefWidth="1150"/>
+                </ScrollPane>
+                
+                <!-- Pagination -->
+                <HBox spacing="10" alignment="CENTER">
+                    <Button fx:id="btnPrev" text="&#8592; Précédent" onAction="#onPreviousPage"
+                            style="-fx-background-color: #E0E0E0; -fx-background-radius: 4;"/>
+                    <Label fx:id="lblPageInfo" text="Page 1 / 1" style="-fx-font-size: 14px;"/>
+                    <Button fx:id="btnNext" text="Suivant &#8594;" onAction="#onNextPage"
+                            style="-fx-background-color: #E0E0E0; -fx-background-radius: 4;"/>
+                </HBox>
+                
+            </VBox>
+        </Tab>
+
+        <!-- TAB 2: MY LISTINGS (CRUD) -->
+        <Tab text="📦 Mes Annonces" fx:id="tabMesAnnonces" onSelectionChanged="#onMesAnnoncesTabSelected">
+            <VBox spacing="15" style="-fx-padding: 15; -fx-background-color: #F5F5F5;">
+                
+                <!-- Header -->
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="📦 Mes Annonces" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="btnNewListing" text="+ Nouvelle Annonce" onAction="#onNewListing"
+                            style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 4; -fx-font-weight: bold;"/>
+                    <Button text="🔄" onAction="#onRefreshMyListings"
+                            style="-fx-background-color: #1565C0; -fx-text-fill: white; -fx-background-radius: 4;"/>
+                </HBox>
+
+                <!-- Seller Profile Setup Notice -->
+                <HBox fx:id="hboxSellerSetup" spacing="10" alignment="CENTER_LEFT"
+                      style="-fx-background-color: #FFF8E1; -fx-padding: 10; -fx-background-radius: 6;" managed="false" visible="false">
+                    <Label text="&#9888; Vous n'avez pas encore de profil vendeur." style="-fx-text-fill: #E65100;"/>
+                    <Button text="Créer mon profil vendeur" onAction="#onCreateSellerProfile"
+                            style="-fx-background-color: #FF8F00; -fx-text-fill: white; -fx-background-radius: 4;"/>
+                </HBox>
+
+                <!-- Listings Table -->
+                <TableView fx:id="tableMyListings" VBox.vgrow="ALWAYS" prefHeight="460">
+                    <columns>
+                        <TableColumn fx:id="colMyTitre"     text="Titre"      prefWidth="200"/>
+                        <TableColumn fx:id="colMyCategorie" text="Catégorie"  prefWidth="100"/>
+                        <TableColumn fx:id="colMyPrix"      text="Prix (TND)" prefWidth="100"/>
+                        <TableColumn fx:id="colMyUnite"     text="Unité"      prefWidth="80"/>
+                        <TableColumn fx:id="colMyQte"       text="Quantité"   prefWidth="90"/>
+                        <TableColumn fx:id="colMyWilaya"    text="Wilaya"     prefWidth="100"/>
+                        <TableColumn fx:id="colMyStatut"    text="Statut"     prefWidth="90"/>
+                        <TableColumn fx:id="colMyVues"      text="Vues"       prefWidth="60"/>
+                        <TableColumn fx:id="colMyActions"   text="Actions"    prefWidth="160"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="Aucune annonce. Cliquez sur '+ Nouvelle Annonce' pour commencer." 
+                               style="-fx-text-fill: #757575; -fx-font-style: italic;"/>
+                    </placeholder>
+                </TableView>
+                
+            </VBox>
+        </Tab>
+
+    </TabPane>
 </AnchorPane>

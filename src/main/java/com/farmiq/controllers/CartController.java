@@ -2,9 +2,11 @@ package com.farmiq.controllers;
 
 import com.farmiq.models.CartItem;
 import com.farmiq.models.Listing;
+import com.farmiq.models.OrderItem;
 import com.farmiq.models.User;
 import com.farmiq.services.CartService;
 import com.farmiq.services.ListingService;
+import com.farmiq.services.OrderService;
 import com.farmiq.utils.AlertUtil;
 import com.farmiq.utils.CurrencyUtils;
 import com.farmiq.utils.SessionManager;
@@ -12,12 +14,9 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -260,19 +259,61 @@ public class CartController implements Initializable {
                 AlertUtil.showWarning("Panier vide", "Votre panier est vide");
                 return;
             }
-            
-            // Navigate to checkout
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml/checkout.fxml"));
-            Parent root = loader.load();
-            
-            // Get main stage and navigate
-            // NavigationManager.getInstance().navigateTo(root);
-            
-            AlertUtil.showInfo("Commande", "Redirection vers la page de paiement...");
-            
+
+            User currentUser = SessionManager.getInstance().getCurrentUser();
+            if (currentUser == null) return;
+
+            // Simple address input dialog
+            TextInputDialog addrDialog = new TextInputDialog();
+            addrDialog.setTitle("Adresse de livraison");
+            addrDialog.setHeaderText("Veuillez saisir votre adresse de livraison");
+            addrDialog.setContentText("Adresse:");
+
+            Optional<String> addrResult = addrDialog.showAndWait();
+            if (addrResult.isEmpty() || addrResult.get().trim().isEmpty()) return;
+
+            String adresse = addrResult.get().trim();
+
+            // Confirm order
+            double total = cartService.getCartTotal(currentUser.getId());
+            if (!AlertUtil.showConfirmation("Confirmer la commande",
+                    String.format("Total: %s%nAdresse: %s%n%nConfirmer la commande?",
+                            CurrencyUtils.format(total), adresse))) return;
+
+            // Place orders grouped by seller
+            boolean anyError = false;
+            OrderService orderService = new OrderService();
+            for (CartItem item : cartItems) {
+                try {
+                    OrderItem oi = new OrderItem();
+                    oi.setListingId(item.getListingId());
+                    oi.setQuantite(item.getQuantite());
+                    oi.setPrixUnitaire(item.getPrix());
+                    oi.setSousTotal(item.getSousTotal());
+
+                    orderService.createOrder(currentUser.getId(), item.getSellerId(),
+                            item.getSousTotal(), 0.0, adresse, null,
+                            List.of(oi));
+                } catch (Exception e) {
+                    logger.error("Erreur création commande pour item {}", item.getId(), e);
+                    anyError = true;
+                }
+            }
+
+            if (!anyError) {
+                cartService.clearCart(currentUser.getId());
+                AlertUtil.showInfo("Commande confirmée",
+                        "Votre commande a été passée avec succès!\nVous serez contacté pour la livraison.");
+                loadCartItems();
+            } else {
+                AlertUtil.showWarning("Commande partielle",
+                        "Certains articles n'ont pas pu être commandés. Vérifiez votre panier.");
+                loadCartItems();
+            }
+
         } catch (Exception e) {
-            logger.error("Erreur lors de la navigation vers le checkout", e);
-            AlertUtil.showError("Erreur", "Impossible de procéder au paiement");
+            logger.error("Erreur lors de la commande", e);
+            AlertUtil.showError("Erreur", "Impossible de passer la commande: " + e.getMessage());
         }
     }
     
