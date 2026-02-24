@@ -32,34 +32,35 @@ public class OrderService {
                 
                 stmt.executeUpdate();
                 
-                ResultSet rs = stmt.getGeneratedKeys();
-                if (rs.next()) {
-                    int orderId = rs.getInt(1);
-                    
-                    try (PreparedStatement itemStmt = conn.prepareStatement(sqlItem)) {
-                        for (OrderItem item : items) {
-                            itemStmt.setInt(1, orderId);
-                            itemStmt.setInt(2, item.getListingId());
-                            itemStmt.setDouble(3, item.getQuantite());
-                            itemStmt.setDouble(4, item.getPrixUnitaire());
-                            itemStmt.setDouble(5, item.getSousTotal());
-                            itemStmt.addBatch();
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        int orderId = rs.getInt(1);
+                        
+                        try (PreparedStatement itemStmt = conn.prepareStatement(sqlItem)) {
+                            for (OrderItem item : items) {
+                                itemStmt.setInt(1, orderId);
+                                itemStmt.setInt(2, item.getListingId());
+                                itemStmt.setDouble(3, item.getQuantite());
+                                itemStmt.setDouble(4, item.getPrixUnitaire());
+                                itemStmt.setDouble(5, item.getSousTotal());
+                                itemStmt.addBatch();
+                            }
+                            itemStmt.executeBatch();
                         }
-                        itemStmt.executeBatch();
+                        
+                        conn.commit();
+                        
+                        Order order = new Order();
+                        order.setId(orderId);
+                        order.setBuyerId(buyerId);
+                        order.setSellerId(sellerId);
+                        order.setMontantTotal(montantTotal);
+                        order.setFraisLivraison(fraisLivraison);
+                        order.setAdresseLivraison(adresseLivraison);
+                        order.setNotes(notes);
+                        order.setStatut(OrderStatus.EN_ATTENTE);
+                        return order;
                     }
-                    
-                    conn.commit();
-                    
-                    Order order = new Order();
-                    order.setId(orderId);
-                    order.setBuyerId(buyerId);
-                    order.setSellerId(sellerId);
-                    order.setMontantTotal(montantTotal);
-                    order.setFraisLivraison(fraisLivraison);
-                    order.setAdresseLivraison(adresseLivraison);
-                    order.setNotes(notes);
-                    order.setStatut(OrderStatus.EN_ATTENTE);
-                    return order;
                 }
             } catch (Exception e) {
                 conn.rollback();
@@ -80,11 +81,12 @@ public class OrderService {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                Order order = mapResultSetToOrder(rs);
-                order.setItems(getOrderItems(order.getId()));
-                return order;
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Order order = mapResultSetToOrder(rs);
+                    order.setItems(getOrderItems(order.getId()));
+                    return order;
+                }
             }
         } catch (SQLException e) {
             logger.error("Erreur récupération commande", e);
@@ -98,9 +100,10 @@ public class OrderService {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, buyerId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                orders.add(mapResultSetToOrder(rs));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    orders.add(mapResultSetToOrder(rs));
+                }
             }
         } catch (SQLException e) {
             logger.error("Erreur récupération commandes acheteur", e);
@@ -114,9 +117,10 @@ public class OrderService {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, sellerId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                orders.add(mapResultSetToOrder(rs));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    orders.add(mapResultSetToOrder(rs));
+                }
             }
         } catch (SQLException e) {
             logger.error("Erreur récupération commandes vendeur", e);
@@ -171,18 +175,19 @@ public class OrderService {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, orderId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                OrderItem item = new OrderItem();
-                item.setId(rs.getInt("id"));
-                item.setOrderId(rs.getInt("order_id"));
-                item.setListingId(rs.getInt("listing_id"));
-                item.setQuantite(rs.getDouble("quantite"));
-                item.setPrixUnitaire(rs.getDouble("prix_unitaire"));
-                item.setSousTotal(rs.getDouble("sous_total"));
-                item.setTitreListing(rs.getString("listing_titre"));
-                item.setImageUrl(rs.getString("image_url"));
-                items.add(item);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    OrderItem item = new OrderItem();
+                    item.setId(rs.getInt("id"));
+                    item.setOrderId(rs.getInt("order_id"));
+                    item.setListingId(rs.getInt("listing_id"));
+                    item.setQuantite(rs.getDouble("quantite"));
+                    item.setPrixUnitaire(rs.getDouble("prix_unitaire"));
+                    item.setSousTotal(rs.getDouble("sous_total"));
+                    item.setTitreListing(rs.getString("listing_titre"));
+                    item.setImageUrl(rs.getString("image_url"));
+                    items.add(item);
+                }
             }
         } catch (SQLException e) {
             logger.error("Erreur récupération articles commande", e);
@@ -206,13 +211,19 @@ public class OrderService {
         
         try {
             order.setBuyerNom(rs.getString("buyer_nom"));
-        } catch (SQLException e) {}
+        } catch (SQLException ignored) {
+            logger.trace("Column buyer_nom not present in result set");
+        }
         try {
             order.setBuyerEmail(rs.getString("buyer_email"));
-        } catch (SQLException e) {}
+        } catch (SQLException ignored) {
+            logger.trace("Column buyer_email not present in result set");
+        }
         try {
             order.setNomBoutique(rs.getString("nom_boutique"));
-        } catch (SQLException e) {}
+        } catch (SQLException ignored) {
+            logger.trace("Column nom_boutique not present in result set");
+        }
         
         return order;
     }

@@ -33,21 +33,33 @@ public class DatabaseConnection {
             }
             props.load(input);
             
-            String host = props.getProperty("db.host", "localhost");
-            String port = props.getProperty("db.port", "3306");
-            String dbName = props.getProperty("db.name", "farmiq");
+            // Environment variables take precedence over config.properties for production
+            String host = resolveConfig("DB_HOST", "db.host", props, "localhost");
+            String port = resolveConfig("DB_PORT", "db.port", props, "3306");
+            String dbName = resolveConfig("DB_NAME", "db.name", props, "farmiq");
             
             URL = "jdbc:mysql://" + host + ":" + port + "/" + dbName 
                     + "?useSSL=false&serverTimezone=Africa/Tunis&characterEncoding=UTF-8"
                     + "&allowPublicKeyRetrieval=true";
-            USER = props.getProperty("db.user", "root");
-            PASSWORD = props.getProperty("db.password", "");
+            USER = resolveConfig("DB_USER", "db.user", props, "root");
+            PASSWORD = resolveConfig("DB_PASSWORD", "db.password", props, "");
             
-            logger.info("Configuration DB chargée: host=" + host + ", db=" + dbName);
+            logger.info("Configuration DB chargée: host={}, db={}", host, dbName);
         } catch (IOException e) {
             logger.warn("Erreur lecture config.properties, utilisation valeurs défaut", e);
             setDefaultConfig();
         }
+    }
+    
+    /**
+     * Resolves a configuration value: environment variable > config property > default.
+     */
+    private static String resolveConfig(String envVar, String propKey, Properties props, String defaultValue) {
+        String envValue = System.getenv(envVar);
+        if (envValue != null && !envValue.isEmpty()) {
+            return envValue;
+        }
+        return props.getProperty(propKey, defaultValue);
     }
     
     private static void setDefaultConfig() {

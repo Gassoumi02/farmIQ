@@ -17,9 +17,10 @@ public class SellerService {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return mapResultSetToSellerProfile(rs);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToSellerProfile(rs);
+                }
             }
         } catch (SQLException e) {
             logger.error("Erreur récupération profil vendeur", e);
@@ -32,9 +33,10 @@ public class SellerService {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return mapResultSetToSellerProfile(rs);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToSellerProfile(rs);
+                }
             }
         } catch (SQLException e) {
             logger.error("Erreur récupération profil vendeur", e);
@@ -55,9 +57,10 @@ public class SellerService {
             
             int rows = stmt.executeUpdate();
             if (rows > 0) {
-                ResultSet rs = stmt.getGeneratedKeys();
-                if (rs.next()) {
-                    profile.setId(rs.getInt(1));
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        profile.setId(rs.getInt(1));
+                    }
                 }
                 return true;
             }
