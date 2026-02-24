@@ -158,10 +158,16 @@ public class ExternalApiService {
         }
     }
 
+    private static final java.util.Set<String> ALLOWED_IMAGE_EXTENSIONS =
+            java.util.Set.of(".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp");
+
     private static String getFileExtension(String filename) {
         int dotIndex = filename.lastIndexOf('.');
         if (dotIndex >= 0) {
-            return filename.substring(dotIndex);
+            String ext = filename.substring(dotIndex).toLowerCase();
+            if (ALLOWED_IMAGE_EXTENSIONS.contains(ext)) {
+                return ext;
+            }
         }
         return ".jpg";
     }
