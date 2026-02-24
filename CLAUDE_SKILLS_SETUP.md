@@ -12,6 +12,10 @@ Claude Skills are portable workflow files that teach Claude how to perform speci
 
 ## Prerequisites
 
+> **Want a free option?** Skip this section and jump to [Using a Free Agent Instead of a Paid API Key](#using-a-free-agent-instead-of-a-paid-api-key) below.
+
+The steps in Options A–C use Claude Code which requires a paid Anthropic API key. The prerequisites are:
+
 | Tool | Version | Install |
 |---|---|---|
 | [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) | latest | `npm install -g @anthropic-ai/claude-code` |
@@ -22,6 +26,141 @@ Verify the installation:
 ```bash
 claude --version
 ```
+
+---
+
+## Using a Free Agent Instead of a Paid API Key
+
+You do **not** need a paid subscription to benefit from an AI coding agent on this project. The three free options below cover most use cases.
+
+### Free Option 1 — GitHub Copilot Free + Custom Instructions (recommended)
+
+GitHub Copilot has a **free tier** (no credit card required) that includes:
+- 2,000 code completions per month
+- 50 chat messages per month
+- Access to the Copilot agent in VS Code
+
+**Step 1 — Enable GitHub Copilot Free**
+
+1. Go to [github.com/features/copilot](https://github.com/features/copilot) and click **Start for free**.
+2. Sign in with your GitHub account — no credit card needed.
+3. In VS Code, install the **[GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)** extension.
+4. Sign in when prompted and select the **Free** plan.
+
+**Step 2 — Project-specific instructions are already set up**
+
+This repository ships a `.github/copilot-instructions.md` file that GitHub Copilot reads automatically. It tells Copilot about the FarmIQ project structure, build commands, coding conventions, and more — for free, with no extra configuration.
+
+```text
+.github/
+└── copilot-instructions.md   ← loaded automatically by Copilot
+```
+
+Open VS Code in the project root and Copilot will immediately understand:
+- How to build and run the app (`mvn javafx:run`)
+- The MVCS layer pattern (Model → DAO → Service → Controller)
+- Log4j2 logging style, custom exception pattern, JDBC conventions
+
+**Step 3 — Use Copilot Chat in VS Code**
+
+Press `Ctrl+Alt+I` (or open the Copilot Chat panel) and ask questions like:
+- *"How do I add a new DAO for the Parcelle model?"*
+- *"Show me how to log an error using the project's convention."*
+- *"What's the database connection string format for this project?"*
+
+---
+
+### Free Option 2 — GitHub Copilot Free via CLI
+
+If you prefer the terminal, install the GitHub CLI extension:
+
+```bash
+# Install GitHub CLI (if not already installed)
+# https://cli.github.com/
+
+# Install the Copilot extension
+gh extension install github/gh-copilot
+
+# Ask a question
+gh copilot suggest "how do I run this JavaFX app with Maven"
+
+# Explain a command
+gh copilot explain "mvn javafx:run"
+```
+
+The same `.github/copilot-instructions.md` file is used here automatically.
+
+---
+
+### Free Option 3 — Fully Local (Ollama + Continue.dev, no internet required)
+
+Run a private, 100% free AI agent locally using open-source models:
+
+**Step 1 — Install Ollama**
+```bash
+# Linux / macOS
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Windows: download from https://ollama.com/download
+```
+
+**Step 2 — Pull a coding model** (choose one based on your RAM)
+```bash
+ollama pull codellama        # 4 GB RAM minimum — good for code
+ollama pull llama3.2         # 2 GB RAM minimum — fast general purpose
+ollama pull deepseek-coder   # 4 GB RAM minimum — strong at Java
+```
+
+**Step 3 — Install the Continue.dev VS Code extension**
+Install **[Continue](https://marketplace.visualstudio.com/items?itemName=Continue.continue)** from the VS Code marketplace.
+
+**Step 4 — Point Continue at Ollama**
+Continue auto-detects a running Ollama instance. Open Continue's config (`~/.continue/config.json`) and verify:
+```json
+{
+  "models": [
+    {
+      "title": "CodeLlama (local)",
+      "provider": "ollama",
+      "model": "codellama"
+    }
+  ]
+}
+```
+
+**Step 5 — Add project context to Continue**
+Create a `.continuerc.json` in the project root to give Continue the same context as the Copilot instructions:
+```json
+{
+  "contextProviders": [
+    { "name": "file", "params": { "nFiles": 10 } },
+    { "name": "codebase" }
+  ],
+  "customCommands": [
+    {
+      "name": "farmiq",
+      "description": "FarmIQ project assistant",
+      "prompt": "You are an expert on the FarmIQ JavaFX + Java 17 + MySQL project. Use Maven to build (`mvn clean compile`) and run (`mvn javafx:run`). Follow the MVCS pattern: Model → DAO → Service → Controller. Use Log4j2 with {} placeholders for logging."
+    }
+  ]
+}
+```
+
+Now type `@farmiq` in the Continue chat to activate the FarmIQ-aware context.
+
+---
+
+### Free Tier Comparison
+
+| Option | Cost | Internet required | Monthly limits |
+|---|---|---|---|
+| GitHub Copilot Free | Free | Yes | 2,000 completions / 50 chats |
+| GitHub CLI Copilot | Free | Yes | Same as above |
+| Ollama + Continue.dev | Free | No (after download) | Unlimited |
+| Claude Code (paid) | ~$20/month | Yes | Unlimited |
+| Composio plugin | Free tier available | Yes | Limited actions |
+
+> **Recommendation**: Start with **GitHub Copilot Free** — it requires zero configuration beyond the free GitHub account you already have, and `.github/copilot-instructions.md` is already set up in this repo.
 
 ---
 
@@ -171,3 +310,7 @@ Place your finished skill folder into `~/.config/claude-code/skills/` and restar
 - [Creating Custom Skills](https://support.claude.com/en/articles/12512198-creating-custom-skills)
 - [Skills API Documentation](https://docs.claude.com/en/api/skills-guide)
 - [Claude Community](https://community.anthropic.com)
+- [GitHub Copilot Free tier](https://github.com/features/copilot) — free AI agent for VS Code
+- [GitHub Copilot custom instructions](https://docs.github.com/en/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot) — project-level context (`.github/copilot-instructions.md`)
+- [Ollama](https://ollama.com) — run local AI models for free
+- [Continue.dev](https://continue.dev) — free open-source AI coding assistant for VS Code
