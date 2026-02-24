@@ -23,21 +23,22 @@ public class CartService {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                CartItem item = new CartItem();
-                item.setId(rs.getInt("id"));
-                item.setUserId(rs.getInt("user_id"));
-                item.setListingId(rs.getInt("listing_id"));
-                item.setQuantite(rs.getDouble("quantite"));
-                item.setTitreListing(rs.getString("listing_titre"));
-                item.setPrix(rs.getDouble("prix"));
-                item.setUnite(rs.getString("unite"));
-                item.setImageUrl(rs.getString("image_url"));
-                item.setNomBoutique(rs.getString("nom_boutique"));
-                item.setSellerId(rs.getInt("seller_id"));
-                item.setQuantiteDisponible(rs.getDouble("quantite_disponible"));
-                items.add(item);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    CartItem item = new CartItem();
+                    item.setId(rs.getInt("id"));
+                    item.setUserId(rs.getInt("user_id"));
+                    item.setListingId(rs.getInt("listing_id"));
+                    item.setQuantite(rs.getDouble("quantite"));
+                    item.setTitreListing(rs.getString("listing_titre"));
+                    item.setPrix(rs.getDouble("prix"));
+                    item.setUnite(rs.getString("unite"));
+                    item.setImageUrl(rs.getString("image_url"));
+                    item.setNomBoutique(rs.getString("nom_boutique"));
+                    item.setSellerId(rs.getInt("seller_id"));
+                    item.setQuantiteDisponible(rs.getDouble("quantite_disponible"));
+                    items.add(item);
+                }
             }
         } catch (SQLException e) {
             logger.error("Erreur récupération panier", e);
@@ -103,9 +104,10 @@ public class CartService {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
             }
         } catch (SQLException e) {
             logger.error("Erreur comptage panier", e);
@@ -121,9 +123,10 @@ public class CartService {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getDouble("total");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble("total");
+                }
             }
         } catch (SQLException e) {
             logger.error("Erreur calcul total panier", e);

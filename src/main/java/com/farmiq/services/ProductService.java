@@ -34,11 +34,12 @@ public class ProductService {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                Product p = mapResultSetToProduct(rs);
-                p.setFournisseurNom(rs.getString("fournisseur_nom"));
-                return p;
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Product p = mapResultSetToProduct(rs);
+                    p.setFournisseurNom(rs.getString("fournisseur_nom"));
+                    return p;
+                }
             }
         } catch (SQLException e) {
             logger.error("Erreur récupération produit", e);
@@ -64,9 +65,10 @@ public class ProductService {
             
             int rows = stmt.executeUpdate();
             if (rows > 0) {
-                ResultSet rs = stmt.getGeneratedKeys();
-                if (rs.next()) {
-                    product.setId(rs.getInt(1));
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        product.setId(rs.getInt(1));
+                    }
                 }
                 return true;
             }
@@ -118,11 +120,12 @@ public class ProductService {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, categorie);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Product p = mapResultSetToProduct(rs);
-                p.setFournisseurNom(rs.getString("fournisseur_nom"));
-                products.add(p);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Product p = mapResultSetToProduct(rs);
+                    p.setFournisseurNom(rs.getString("fournisseur_nom"));
+                    products.add(p);
+                }
             }
         } catch (SQLException e) {
             logger.error("Erreur récupération produits par catégorie", e);
@@ -153,11 +156,12 @@ public class ProductService {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, "%" + keyword + "%");
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Product p = mapResultSetToProduct(rs);
-                p.setFournisseurNom(rs.getString("fournisseur_nom"));
-                products.add(p);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Product p = mapResultSetToProduct(rs);
+                    p.setFournisseurNom(rs.getString("fournisseur_nom"));
+                    products.add(p);
+                }
             }
         } catch (SQLException e) {
             logger.error("Erreur recherche produits", e);

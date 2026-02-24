@@ -47,9 +47,10 @@ public class FournisseurService {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return mapResultSetToFournisseur(rs);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToFournisseur(rs);
+                }
             }
         } catch (SQLException e) {
             logger.error("Erreur récupération fournisseur", e);
@@ -69,9 +70,10 @@ public class FournisseurService {
             
             int rows = stmt.executeUpdate();
             if (rows > 0) {
-                ResultSet rs = stmt.getGeneratedKeys();
-                if (rs.next()) {
-                    fournisseur.setId(rs.getInt(1));
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        fournisseur.setId(rs.getInt(1));
+                    }
                 }
                 return true;
             }
@@ -133,9 +135,10 @@ public class FournisseurService {
             stmt.setString(2, search);
             stmt.setString(3, search);
             
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                fournisseurs.add(mapResultSetToFournisseur(rs));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    fournisseurs.add(mapResultSetToFournisseur(rs));
+                }
             }
         } catch (SQLException e) {
             logger.error("Erreur recherche fournisseurs", e);

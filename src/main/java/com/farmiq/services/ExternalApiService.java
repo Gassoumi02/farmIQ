@@ -3,134 +3,166 @@ package com.farmiq.services;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.mail.*;
+import javax.mail.internet.*;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.nio.file.*;
+import java.util.Properties;
+import java.util.UUID;
 
+/**
+ * Service for external integrations using free APIs and local resources.
+ * <ul>
+ *   <li>Email: JavaMail SMTP (free with any SMTP provider, e.g. Gmail)</li>
+ *   <li>Images: Local file storage under the configured images directory</li>
+ * </ul>
+ * All credentials are loaded from config.properties with environment variable overrides.
+ */
 public class ExternalApiService {
     private static final Logger logger = LogManager.getLogger(ExternalApiService.class);
 
-    // Configuration Email API (SendGrid)
-    private static final String SENDGRID_API_KEY = "YOUR_SENDGRID_API_KEY";
-    private static final String EMAIL_API_URL = "https://api.sendgrid.com/v3/mail/send";
+    private final String mailHost;
+    private final String mailPort;
+    private final String mailUser;
+    private final String mailPassword;
+    private final String mailFrom;
+    private final String imagesDir;
 
-    // Configuration Cloudinary
-    private static final String CLOUDINARY_CLOUD_NAME = "YOUR_CLOUD_NAME";
-    private static final String CLOUDINARY_API_KEY = "YOUR_API_KEY";
-    private static final String CLOUDINARY_API_SECRET = "YOUR_API_SECRET";
-    private static final String CLOUDINARY_UPLOAD_URL =
-            "https://api.cloudinary.com/v1_1/" + CLOUDINARY_CLOUD_NAME + "/image/upload";
+    public ExternalApiService() {
+        Properties config = new Properties();
+        try (InputStream input = getClass().getResourceAsStream("/config.properties")) {
+            if (input != null) {
+                config.load(input);
+            }
+        } catch (IOException e) {
+            logger.warn("Could not load config.properties for external API settings", e);
+        }
 
+        // Environment variables take precedence over config.properties
+        this.mailHost = resolveConfig("MAIL_HOST", "mail.host", config, "smtp.gmail.com");
+        this.mailPort = resolveConfig("MAIL_PORT", "mail.port", config, "587");
+        this.mailUser = resolveConfig("MAIL_USER", "mail.user", config, "");
+        this.mailPassword = resolveConfig("MAIL_PASSWORD", "mail.password", config, "");
+        this.mailFrom = resolveConfig("MAIL_FROM", "mail.from", config, "noreply@farmiq.com");
+        this.imagesDir = resolveConfig("APP_IMAGES_DIR", "app.images.dir", config, "./images");
+    }
+
+    /**
+     * Resolves a configuration value: environment variable > config property > default.
+     */
+    private static String resolveConfig(String envVar, String propKey, Properties config, String defaultValue) {
+        String envValue = System.getenv(envVar);
+        if (envValue != null && !envValue.isEmpty()) {
+            return envValue;
+        }
+        return config.getProperty(propKey, defaultValue);
+    }
+
+    /**
+     * Sends a password reset email using JavaMail SMTP (free).
+     */
     public boolean sendPasswordResetEmail(String toEmail, String resetToken) {
         try {
             logger.info("Envoi email réinitialisation à: {}", toEmail);
-            URL url = new URL(EMAIL_API_URL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Authorization", "Bearer " + SENDGRID_API_KEY);
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
 
-            String resetLink = "http://localhost:8080/reset-password?token=" + resetToken;
-            String jsonBody = String.format(
-                "{\"personalizations\":[{\"to\":[{\"email\":\"%s\"}]," +
-                "\"subject\":\"Réinitialisation de mot de passe FarmIQ\"}]," +
-                "\"from\":{\"email\":\"noreply@farmiq.com\",\"name\":\"FarmIQ\"}," +
-                "\"content\":[{\"type\":\"text/html\"," +
-                "\"value\":\"<h2>Réinitialisation de mot de passe FarmIQ</h2>" +
-                "<p>Cliquez sur le lien ci-dessous :</p><a href='%s'>Réinitialiser</a>" +
-                "<p>Ce lien expire dans 24 heures.</p>\"}]}",
-                toEmail, resetLink);
-
-            try (OutputStream os = conn.getOutputStream()) {
-                os.write(jsonBody.getBytes("utf-8"));
+            if (mailUser.isEmpty() || mailPassword.isEmpty()) {
+                logger.warn("SMTP credentials not configured — email not sent. " +
+                        "Set mail.user/mail.password in config.properties or MAIL_USER/MAIL_PASSWORD env vars.");
+                return false;
             }
 
-            int responseCode = conn.getResponseCode();
-            logger.info("Email envoyé. Code réponse: {}", responseCode);
-            return responseCode == 202;
+            Properties props = new Properties();
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.host", mailHost);
+            props.put("mail.smtp.port", mailPort);
 
-        } catch (Exception e) {
+            Session session = Session.getInstance(props, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(mailUser, mailPassword);
+                }
+            });
+
+            String resetLink = "http://localhost:8080/reset-password?token=" + resetToken;
+            String htmlBody = "<h2>Réinitialisation de mot de passe FarmIQ</h2>"
+                    + "<p>Cliquez sur le lien ci-dessous :</p>"
+                    + "<a href='" + resetLink + "'>Réinitialiser</a>"
+                    + "<p>Ce lien expire dans 24 heures.</p>";
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(mailFrom));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+            message.setSubject("Réinitialisation de mot de passe FarmIQ");
+            message.setContent(htmlBody, "text/html; charset=utf-8");
+
+            Transport.send(message);
+            logger.info("Email envoyé avec succès à: {}", toEmail);
+            return true;
+
+        } catch (MessagingException e) {
             logger.error("Erreur envoi email à: {}", toEmail, e);
             return false;
         }
     }
 
+    /**
+     * Stores a profile photo to local file storage (free, no external API needed).
+     * Returns the relative path to the stored image.
+     */
     public String uploadProfilePhoto(File photoFile) {
         try {
-            logger.info("Upload photo: {}", photoFile.getName());
-            URL url = new URL(CLOUDINARY_UPLOAD_URL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
+            logger.info("Upload photo (local): {}", photoFile.getName());
 
-            String boundary = "===" + System.currentTimeMillis() + "===";
-            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+            Path uploadDir = Paths.get(imagesDir, "profiles");
+            Files.createDirectories(uploadDir);
 
-            try (OutputStream os = conn.getOutputStream();
-                 PrintWriter writer = new PrintWriter(new OutputStreamWriter(os, "UTF-8"), true)) {
+            String extension = getFileExtension(photoFile.getName());
+            String uniqueName = UUID.randomUUID() + extension;
+            Path destination = uploadDir.resolve(uniqueName);
 
-                writer.append("--").append(boundary).append("\r\n");
-                writer.append("Content-Disposition: form-data; name=\"file\"; filename=\"")
-                      .append(photoFile.getName()).append("\"\r\n");
-                writer.append("Content-Type: image/jpeg\r\n\r\n").flush();
+            Files.copy(photoFile.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
 
-                try (FileInputStream fis = new FileInputStream(photoFile)) {
-                    byte[] buffer = new byte[4096];
-                    int bytesRead;
-                    while ((bytesRead = fis.read(buffer)) != -1) {
-                        os.write(buffer, 0, bytesRead);
-                    }
-                    os.flush();
-                }
+            String relativePath = "images/profiles/" + uniqueName;
+            logger.info("Photo stockée localement: {}", relativePath);
+            return relativePath;
 
-                writer.append("\r\n").flush();
-                writer.append("--").append(boundary).append("\r\n");
-                writer.append("Content-Disposition: form-data; name=\"api_key\"\r\n\r\n");
-                writer.append(CLOUDINARY_API_KEY).append("\r\n");
-                writer.append("--").append(boundary).append("--\r\n").flush();
-            }
-
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) response.append(line);
-                String jsonResponse = response.toString();
-                int urlStart = jsonResponse.indexOf("\"secure_url\":\"") + 14;
-                int urlEnd = jsonResponse.indexOf("\"", urlStart);
-                String photoUrl = jsonResponse.substring(urlStart, urlEnd);
-                logger.info("Photo uploadée: {}", photoUrl);
-                return photoUrl;
-            }
-
-        } catch (Exception e) {
-            logger.error("Erreur upload photo: {}", photoFile.getName(), e);
+        } catch (IOException e) {
+            logger.error("Erreur stockage photo: {}", photoFile.getName(), e);
             return null;
         }
     }
 
+    /**
+     * Basic email format verification (no external API needed).
+     */
     public boolean verifyEmail(String email) {
         logger.debug("Vérification email: {}", email);
-        return true;
+        return email != null && email.matches("^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$");
     }
 
     public String enhancePrompt(String prompt) {
         try {
             logger.info("Enhancing prompt: {}", prompt);
-            // Simulate an API call to an LLM
-            Thread.sleep(1000); // Simulate latency
-            
-            // Simple logic to "enhance" the prompt
+
             String enhanced = prompt.trim();
             if (!enhanced.isEmpty()) {
                 enhanced = "Je souhaite cultiver " + enhanced + " de manière optimale";
             }
-            
+
             logger.info("Enhanced prompt: {}", enhanced);
             return enhanced;
         } catch (Exception e) {
             logger.error("Erreur enhance prompt", e);
             return prompt;
         }
+    }
+
+    private static String getFileExtension(String filename) {
+        int dotIndex = filename.lastIndexOf('.');
+        if (dotIndex >= 0) {
+            return filename.substring(dotIndex);
+        }
+        return ".jpg";
     }
 }
