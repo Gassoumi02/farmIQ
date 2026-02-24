@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.farmiq.controllers.LoginController"
+            stylesheets="@../css/admin.css"
+            styleClass="login-root"
+            prefWidth="900" prefHeight="620">
+
+    <center>
+        <HBox alignment="CENTER" styleClass="login-wrapper">
+
+            <!-- LEFT PANEL - Branding -->
+            <VBox styleClass="login-brand-panel" alignment="CENTER" spacing="24" prefWidth="400">
+                <Label text="🌾" style="-fx-font-size: 64px;"/>
+                <Label text="FarmIQ" styleClass="login-brand-title"/>
+                <Label text="Plateforme de Gestion Agricole" styleClass="login-brand-sub" wrapText="true" textAlignment="CENTER"/>
+            </VBox>
+
+            <!-- RIGHT PANEL - Form -->
+            <VBox styleClass="login-form-panel" alignment="CENTER" spacing="0" prefWidth="420">
+                <VBox styleClass="login-form-inner" spacing="20">
+                    <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+                    <Label text="Connexion" styleClass="login-title"/>
+                    <Label text="Accédez à votre espace FarmIQ" styleClass="login-subtitle"/>
+
+                    <Label fx:id="errorLabel" styleClass="login-error" visible="false" managed="false" wrapText="true"/>
+
+                    <!-- Email -->
+                    <VBox spacing="6">
+                        <Label text="Email" styleClass="form-label"/>
+                        <TextField fx:id="emailField" promptText="votre@email.com" styleClass="form-input login-input"/>
+                    </VBox>
+
+                    <!-- Password with eye toggle -->
+                    <VBox spacing="6">
+                        <Label text="Mot de passe" styleClass="form-label"/>
+                        <StackPane styleClass="password-stack">
+                            <PasswordField fx:id="passwordField"
+                                           promptText="••••••••"
+                                           styleClass="form-input login-input password-field-pad"/>
+                            <TextField fx:id="passwordVisible"
+                                       promptText="••••••••"
+                                       styleClass="form-input login-input password-field-pad"
+                                       visible="false" managed="false"/>
+                            <Button fx:id="btnTogglePassword"
+                                    text="👁"
+                                    styleClass="btn-eye"
+                                    onAction="#handleTogglePassword"
+                                    StackPane.alignment="CENTER_RIGHT"/>
+                        </StackPane>
+                    </VBox>
+
+                    <Label fx:id="statusLabel" text="" styleClass="status-info"/>
+
+                    <Button fx:id="loginButton" text="Se Connecter" styleClass="btn-login"
+                            maxWidth="Infinity" onAction="#handleLogin" defaultButton="true"/>
+
+                    <Separator/>
+
+                    <HBox alignment="CENTER" spacing="8">
+                        <Label text="Pas encore de compte ?" styleClass="link-text"/>
+                        <Button text="S'inscrire" styleClass="btn-link" onAction="#handleRegister"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+
+        </HBox>
+    </center>
+</BorderPane>

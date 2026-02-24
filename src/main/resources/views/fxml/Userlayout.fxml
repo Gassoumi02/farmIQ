@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.farmiq.controllers.UserLayoutController"
+            stylesheets="@../css/admin.css"
+            styleClass="root-layout">
+
+    <!-- SIDEBAR -->
+    <left>
+        <VBox styleClass="sidebar" spacing="0" minWidth="230" prefWidth="230">
+
+            <!-- Brand -->
+            <VBox styleClass="sidebar-brand" alignment="CENTER" spacing="4">
+                <Label text="🌾" style="-fx-font-size: 30px;"/>
+                <Label text="FarmIQ" styleClass="brand-title"/>
+                <Label text="Espace Agriculteur" styleClass="brand-subtitle"/>
+            </VBox>
+
+            <!-- User info card -->
+            <HBox styleClass="sidebar-user-info" alignment="CENTER_LEFT" spacing="10">
+                <VBox alignment="CENTER" styleClass="avatar-circle">
+                    <Label text="👤" style="-fx-font-size: 18px;"/>
+                </VBox>
+                <VBox spacing="2">
+                    <Label fx:id="lblUserName" styleClass="user-name-label" text="Utilisateur"/>
+                    <Label fx:id="lblUserRole" styleClass="brand-subtitle" text="AGRICULTEUR"/>
+                </VBox>
+            </HBox>
+
+            <Separator styleClass="sidebar-separator"/>
+
+            <!-- Navigation menu -->
+            <VBox styleClass="nav-menu" spacing="4" VBox.vgrow="ALWAYS">
+                <Label text="MODULES" styleClass="nav-section-title"/>
+
+                <!-- Transactions -->
+                <Button fx:id="btnNavTransactions"
+                        text="💰  Transactions"
+                        styleClass="nav-btn, nav-active"
+                        maxWidth="Infinity"
+                        onAction="#showTransactions"/>
+
+                <!-- Marketplace -->
+                <Button fx:id="btnNavMarketplace"
+                        text="🛒  Marketplace"
+                        styleClass="nav-btn"
+                        maxWidth="Infinity"
+                        onAction="#showMarketplace"/>
+
+                <!-- Calendar/Weather -->
+                <Button fx:id="btnNavCalendar"
+                        text="📅  Calendrier"
+                        styleClass="nav-btn"
+                        maxWidth="Infinity"
+                        onAction="#showCalendar"/>
+
+                <!-- Plantes -->
+                <Button fx:id="btnNavPlantes"
+                        text="🌱  Mes Plantes"
+                        styleClass="nav-btn"
+                        maxWidth="Infinity"
+                        onAction="#showPlantes"/>
+
+                <!-- FUTURS MODULES : decommenter + creer le FXML correspondant
+                <Button fx:id="btnNavProduits"
+                        text="🌱  Produits"
+                        styleClass="nav-btn"
+                        maxWidth="Infinity"
+                        onAction="#showProduits"/>
+                <Button fx:id="btnNavFournisseurs"
+                        text="🏭  Fournisseurs"
+                        styleClass="nav-btn"
+                        maxWidth="Infinity"
+                        onAction="#showFournisseurs"/>
+                <Button fx:id="btnNavRapports"
+                        text="📊  Rapports"
+                        styleClass="nav-btn"
+                        maxWidth="Infinity"
+                        onAction="#showRapports"/>
+                <Button fx:id="btnNavStock"
+                        text="📦  Stock"
+                        styleClass="nav-btn"
+                        maxWidth="Infinity"
+                        onAction="#showStock"/>
+                -->
+
+                <!-- Séparateur section -->
+                <Separator styleClass="sidebar-separator">
+                    <VBox.margin>
+                        <Insets top="8" right="0" bottom="4" left="0"/>
+                    </VBox.margin>
+                </Separator>
+                <Label text="COMPTE" styleClass="nav-section-title"/>
+
+                <Button fx:id="btnNavProfil"
+                        text="⚙️  Mon Profil"
+                        styleClass="nav-btn"
+                        maxWidth="Infinity"
+                        onAction="#showProfil"/>
+            </VBox>
+
+            <!-- Footer -->
+            <VBox styleClass="sidebar-footer" spacing="8">
+                <Separator styleClass="sidebar-separator"/>
+                <Button text="🚪  Déconnexion"
+                        styleClass="btn-logout"
+                        maxWidth="Infinity"
+                        onAction="#handleDeconnexion"/>
+            </VBox>
+
+        </VBox>
+    </left>
+
+    <!-- MAIN CONTENT -->
+    <center>
+        <VBox>
+            <!-- Top bar -->
+            <HBox styleClass="content-header" alignment="CENTER_LEFT" spacing="16">
+                <Label fx:id="lblPageTitle" text="Transactions" styleClass="page-title"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblOnline" text="🟢 En ligne" styleClass="status-online"/>
+            </HBox>
+
+            <!-- Dynamic content -->
+            <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </center>
+
+</BorderPane>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.farmiq.controllers.AdminLayoutController"
+            stylesheets="@../css/admin.css"
+            styleClass="root-layout">
+
+    <!-- SIDEBAR -->
+    <left>
+        <VBox styleClass="sidebar" spacing="0" minWidth="240" prefWidth="240">
+            <!-- Brand -->
+            <VBox styleClass="sidebar-brand" alignment="CENTER" spacing="4">
+                <Label text="🌾" style="-fx-font-size:32px;"/>
+                <Label text="FarmIQ" styleClass="brand-title"/>
+                <Label text="Back-Office Admin" styleClass="brand-subtitle"/>
+            </VBox>
+
+            <!-- Admin Info -->
+            <HBox styleClass="sidebar-user-info" alignment="CENTER_LEFT" spacing="10">
+                <VBox alignment="CENTER" styleClass="avatar-circle">
+                    <Label text="👤" style="-fx-font-size:18px;"/>
+                </VBox>
+                <VBox spacing="2">
+                    <Label fx:id="lblCurrentUser" styleClass="user-name-label" text="Admin"/>
+                </VBox>
+            </HBox>
+
+            <!-- Separator -->
+            <Separator styleClass="sidebar-separator"/>
+
+            <!-- Nav Items -->
+            <VBox styleClass="nav-menu" spacing="4" VBox.vgrow="ALWAYS">
+                <Label text="NAVIGATION" styleClass="nav-section-title"/>
+
+                <Button fx:id="btnNavUsers" 
+                        text="👥  Gestion Utilisateurs" 
+                        styleClass="nav-btn, nav-active"
+                        maxWidth="Infinity"
+                        onAction="#showUsers"/>
+
+                <Button fx:id="btnNavTransactions" 
+                        text="💰  Gestion Transactions" 
+                        styleClass="nav-btn"
+                        maxWidth="Infinity"
+                        onAction="#showTransactions"/>
+            </VBox>
+
+            <!-- Footer -->
+            <VBox styleClass="sidebar-footer" spacing="8">
+                <Separator styleClass="sidebar-separator"/>
+                <Button text="🚪  Déconnexion" 
+                        styleClass="btn-logout"
+                        maxWidth="Infinity"
+                        onAction="#handleDeconnexion"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- MAIN CONTENT -->
+    <center>
+        <VBox>
+            <!-- Top Header Bar -->
+            <HBox styleClass="content-header" alignment="CENTER_LEFT" spacing="16">
+                <Label fx:id="lblPageTitle" text="Back-Office" styleClass="page-title"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <Label text="🟢 En ligne" styleClass="status-online"/>
+            </HBox>
+            <!-- Dynamic Content Area -->
+            <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </center>
+</BorderPane>

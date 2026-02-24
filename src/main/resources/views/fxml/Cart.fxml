@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
+           fx:controller="com.farmiq.controllers.CartController"
+           style="-fx-background-color: #F5F5F5;">
+    
+    <VBox spacing="20" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+          style="-fx-padding: 20;">
+        
+        <!-- Header -->
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label text="🛒 Mon Panier" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;"/>
+            <Label fx:id="lblItemCount" text="0 article(s)" 
+                   style="-fx-font-size: 14px; -fx-text-fill: #757575;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="🔄 Actualiser" onAction="#onRefresh" 
+                    style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 4;"/>
+        </HBox>
+        
+        <!-- Empty Message -->
+        <Label fx:id="lblEmptyMessage" text="Votre panier est vide" 
+               visible="false" managed="false"
+               style="-fx-font-size: 18px; -fx-text-fill: #757575; -fx-alignment: center;"
+               VBox.vgrow="ALWAYS"/>
+        
+        <!-- Cart Items ScrollPane -->
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+            <VBox fx:id="vboxCartItems" spacing="10">
+                <!-- Cart items will be added programmatically -->
+            </VBox>
+        </ScrollPane>
+        
+        <!-- Footer with Total and Buttons -->
+        <HBox spacing="20" alignment="CENTER_RIGHT">
+            <VBox spacing="5" alignment="CENTER_RIGHT">
+                <Label text="Total:" style="-fx-font-size: 14px; -fx-text-fill: #757575;"/>
+                <Label fx:id="lblTotal" text="0,00 TND" 
+                       style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;"/>
+            </VBox>
+            
+            <Button fx:id="btnVider" text="🗑️ Vider le panier" onAction="#onViderPanier"
+                    style="-fx-background-color: #C62828; -fx-text-fill: white; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+            
+            <Button fx:id="btnCommander" text="💳 Commander →" onAction="#onCommander"
+                    style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+        </HBox>
+        
+    </VBox>
+</ AnchorPane>

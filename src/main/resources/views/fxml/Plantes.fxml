@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.farmiq.controllers.PlantesController"
+      spacing="0"
+      styleClass="plantes-container">
+
+    <padding>
+        <Insets top="24" right="32" bottom="24" left="32"/>
+    </padding>
+
+    <!-- ===== HERO HEADER ===== -->
+    <HBox alignment="CENTER_LEFT" spacing="20" styleClass="plantes-hero">
+        <padding>
+            <Insets top="24" right="24" bottom="24" left="24"/>
+        </padding>
+
+        <VBox alignment="CENTER" styleClass="hero-icon-container">
+            <Label text="🌱" style="-fx-font-size: 48px;"/>
+        </VBox>
+
+        <VBox spacing="6" HBox.hgrow="ALWAYS">
+            <Label text="Gestion des Cultures" styleClass="hero-title"/>
+            <Label text="Suivez vos plantations de la semence à la récolte"
+                   styleClass="hero-subtitle"/>
+        </VBox>
+
+        <VBox spacing="12" alignment="CENTER_RIGHT">
+            <HBox spacing="12" alignment="CENTER_RIGHT">
+                <Button fx:id="btnRefresh" text="🔄" styleClass="btn-icon-round"
+                        onAction="#handleRefresh">
+                    <tooltip><Tooltip text="Actualiser"/></tooltip>
+                </Button>
+                <Button fx:id="btnExport" text="📊" styleClass="btn-icon-round">
+                    <tooltip><Tooltip text="Exporter (prochainement)"/></tooltip>
+                </Button>
+                <Button fx:id="btnParcelles" text="🟫 Mes Parcelles" styleClass="btn-primary"
+                        onAction="#handleParcelles"/>
+            </HBox>
+            <Label fx:id="lblCount" text="0 culture(s)" styleClass="hero-badge"/>
+        </VBox>
+    </HBox>
+
+    <!-- ===== QUICK STATS CARDS ===== -->
+    <HBox spacing="16" styleClass="stats-container">
+        <padding>
+            <Insets top="0" right="0" bottom="20" left="0"/>
+        </padding>
+
+        <!-- Card Semées -->
+        <VBox alignment="CENTER" spacing="8" styleClass="stat-card stat-card-green" HBox.hgrow="ALWAYS">
+            <Label text="🌱" style="-fx-font-size: 32px;"/>
+            <Label fx:id="lblSemees" text="0" styleClass="stat-card-number"/>
+            <Label text="Semées" styleClass="stat-card-label"/>
+        </VBox>
+
+        <!-- Card En Croissance -->
+        <VBox alignment="CENTER" spacing="8" styleClass="stat-card stat-card-growth" HBox.hgrow="ALWAYS">
+            <Label text="🌿" style="-fx-font-size: 32px;"/>
+            <Label fx:id="lblCroissance" text="0" styleClass="stat-card-number"/>
+            <Label text="En croissance" styleClass="stat-card-label"/>
+        </VBox>
+
+        <!-- Card Prêtes -->
+        <VBox alignment="CENTER" spacing="8" styleClass="stat-card stat-card-ready" HBox.hgrow="ALWAYS">
+            <Label text="🌾" style="-fx-font-size: 32px;"/>
+            <Label fx:id="lblPretes" text="0" styleClass="stat-card-number"/>
+            <Label text="Prêtes" styleClass="stat-card-label"/>
+        </VBox>
+
+        <!-- Card Récoltées -->
+        <VBox alignment="CENTER" spacing="8" styleClass="stat-card stat-card-harvested" HBox.hgrow="ALWAYS">
+            <Label text="✅" style="-fx-font-size: 32px;"/>
+            <Label fx:id="lblRecoltees" text="0" styleClass="stat-card-number"/>
+            <Label text="Récoltées" styleClass="stat-card-label"/>
+        </VBox>
+    </HBox>
+
+    <!-- ===== MAIN CONTENT AREA ===== -->
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
+
+        <!-- ===== LEFT PANEL: FORM ===== -->
+        <VBox spacing="0" prefWidth="420" styleClass="form-panel">
+
+            <!-- Form Header -->
+            <HBox alignment="CENTER_LEFT" spacing="12" styleClass="form-header">
+                <Label text="📝" style="-fx-font-size: 22px;"/>
+                <Label text="Nouvelle Culture" styleClass="form-title"/>
+            </HBox>
+
+            <!-- Form Body -->
+            <VBox spacing="18" styleClass="form-body" VBox.vgrow="ALWAYS">
+
+                <!-- Nom Field Group -->
+                <VBox spacing="8" styleClass="field-group">
+                    <HBox alignment="CENTER_LEFT" spacing="6">
+                        <Label text="Nom de la culture" styleClass="field-label-primary"/>
+                        <Label text="*" styleClass="required-star"/>
+                    </HBox>
+                    <TextField fx:id="txtNom"
+                               promptText="Ex: Tomate, Maïs, Blé..."
+                               styleClass="modern-input"/>
+                </VBox>
+
+                <!-- Type Field Group -->
+                <VBox spacing="8" styleClass="field-group">
+                    <HBox alignment="CENTER_LEFT" spacing="6">
+                        <Label text="Type" styleClass="field-label-primary"/>
+                        <Label text="*" styleClass="required-star"/>
+                    </HBox>
+                    <TextField fx:id="txtType"
+                               promptText="Ex: Légume, Fruit, Céréale..."
+                               styleClass="modern-input"/>
+                </VBox>
+
+                <!-- Dates Row -->
+                <HBox spacing="12">
+                    <!-- Date Plantation -->
+                    <VBox spacing="8" styleClass="field-group" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="6">
+                            <Label text="📅 Plantation" styleClass="field-label-primary"/>
+                            <Label text="*" styleClass="required-star"/>
+                        </HBox>
+                        <DatePicker fx:id="dpPlantation"
+                                    styleClass="modern-input"
+                                    promptText="Date"
+                                    maxWidth="Infinity"/>
+                    </VBox>
+
+                    <!-- Date Récolte -->
+                    <VBox spacing="8" styleClass="field-group" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="6">
+                            <Label text="🌾 Récolte" styleClass="field-label-primary"/>
+                            <Label text="*" styleClass="required-star"/>
+                        </HBox>
+                        <DatePicker fx:id="dpRecolte"
+                                    styleClass="modern-input"
+                                    promptText="Date"
+                                    maxWidth="Infinity"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Quantité et État Row -->
+                <HBox spacing="12">
+                    <!-- Quantité -->
+                    <VBox spacing="8" styleClass="field-group" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="6">
+                            <Label text="Quantité" styleClass="field-label-primary"/>
+                            <Label text="*" styleClass="required-star"/>
+                        </HBox>
+                        <TextField fx:id="txtQuantite"
+                                   promptText="Ex: 50, 100..."
+                                   styleClass="modern-input"/>
+                    </VBox>
+
+                    <!-- État -->
+                    <VBox spacing="8" styleClass="field-group" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="6">
+                            <Label text="État" styleClass="field-label-primary"/>
+                            <Label text="*" styleClass="required-star"/>
+                        </HBox>
+                        <ComboBox fx:id="cbEtat"
+                                  styleClass="modern-combo"
+                                  promptText="Sélectionner"
+                                  maxWidth="Infinity"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Spacer -->
+                <Region VBox.vgrow="ALWAYS" minHeight="10"/>
+
+                <!-- Action Buttons -->
+                <VBox spacing="12" styleClass="action-buttons-container">
+                    <HBox spacing="12">
+                        <Button fx:id="btnAjouter"
+                                text="✚ Ajouter"
+                                styleClass="btn-action btn-add"
+                                onAction="#handleAjouter"
+                                HBox.hgrow="ALWAYS"
+                                maxWidth="Infinity"/>
+                        <Button fx:id="btnModifier"
+                                text="✎ Modifier"
+                                styleClass="btn-action btn-edit"
+                                onAction="#handleModifier"
+                                HBox.hgrow="ALWAYS"
+                                maxWidth="Infinity"/>
+                    </HBox>
+
+                    <HBox spacing="12">
+                        <Button fx:id="btnSupprimer"
+                                text="🗑 Supprimer"
+                                styleClass="btn-action btn-delete"
+                                onAction="#handleSupprimer"
+                                HBox.hgrow="ALWAYS"
+                                maxWidth="Infinity"/>
+                        <Button fx:id="btnVider"
+                                text="↺ Réinitialiser"
+                                styleClass="btn-action btn-reset"
+                                onAction="#handleVider"
+                                HBox.hgrow="ALWAYS"
+                                maxWidth="Infinity"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Tip Box -->
+                <HBox spacing="12" alignment="CENTER_LEFT" styleClass="tip-box">
+                    <Label text="💡" style="-fx-font-size: 18px;"/>
+                    <Label text="Cliquez sur une ligne du tableau pour modifier une culture existante"
+                           styleClass="tip-text"
+                           wrapText="true"
+                           HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </VBox>
+
+        </VBox>
+
+        <!-- ===== RIGHT PANEL: TABLE ===== -->
+        <VBox spacing="0" HBox.hgrow="ALWAYS" styleClass="table-panel">
+
+            <!-- Table Header -->
+            <HBox alignment="CENTER_LEFT" spacing="16" styleClass="table-header">
+                <Label text="📋" style="-fx-font-size: 22px;"/>
+                <Label text="Vos Cultures" styleClass="table-title" HBox.hgrow="ALWAYS"/>
+
+                <!-- Search Bar -->
+                <HBox spacing="10" alignment="CENTER_LEFT" styleClass="search-container">
+                    <Label text="🔍" style="-fx-font-size: 16px; -fx-text-fill: #7f8c8d;"/>
+                    <TextField fx:id="txtSearch"
+                               promptText="Rechercher..."
+                               styleClass="search-input"
+                               prefWidth="240"/>
+                    <Button fx:id="btnEnhancePrompt" text="✨ Améliorer" styleClass="btn-secondary" onAction="#handleEnhancePrompt">
+                        <tooltip><Tooltip text="Améliorer le nom de la culture"/></tooltip>
+                    </Button>
+                </HBox>
+            </HBox>
+
+            <!-- Table Container -->
+            <VBox styleClass="table-container" VBox.vgrow="ALWAYS">
+                <TableView fx:id="tablePlantes"
+                           VBox.vgrow="ALWAYS"
+                           styleClass="modern-table">
+                    <columns>
+                        <TableColumn fx:id="colId"
+                                     text="ID"
+                                     prefWidth="60"
+                                     styleClass="col-center"/>
+                        <TableColumn fx:id="colNom"
+                                     text="Nom de la Culture"
+                                     prefWidth="180"/>
+                        <TableColumn fx:id="colType"
+                                     text="Type"
+                                     prefWidth="130"/>
+                        <TableColumn fx:id="colQuantite"
+                                     text="Quantité"
+                                     prefWidth="90"
+                                     styleClass="col-center"/>
+                        <TableColumn fx:id="colPlantation"
+                                     text="Plantation"
+                                     prefWidth="110"
+                                     styleClass="col-center"/>
+                        <TableColumn fx:id="colRecolte"
+                                     text="Récolte Prévue"
+                                     prefWidth="120"
+                                     styleClass="col-center"/>
+                        <TableColumn fx:id="colJours"
+                                     text="Jours"
+                                     prefWidth="80"
+                                     styleClass="col-center"/>
+                        <TableColumn fx:id="colEtat"
+                                     text="État"
+                                     prefWidth="150"/>
+                    </columns>
+                    <placeholder>
+                        <VBox alignment="CENTER" spacing="16" style="-fx-padding: 40;">
+                            <Label text="🌾" style="-fx-font-size: 48px; -fx-opacity: 0.3;"/>
+                            <Label text="Aucune culture enregistrée"
+                                   style="-fx-text-fill: #95a5a6; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                            <Label text="Commencez par ajouter votre première culture"
+                                   style="-fx-text-fill: #bdc3c7; -fx-font-size: 13px;"/>
+                        </VBox>
+                    </placeholder>
+                </TableView>
+            </VBox>
+
+        </VBox>
+
+    </HBox>
+
+</VBox>

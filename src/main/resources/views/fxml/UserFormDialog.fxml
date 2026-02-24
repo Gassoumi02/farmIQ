@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.farmiq.controllers.UserFormController"
+      stylesheets="@../css/admin.css"
+      styleClass="dialog-container"
+      spacing="0" minWidth="480" maxWidth="520">
+
+    <!-- DIALOG HEADER -->
+    <HBox styleClass="dialog-header" alignment="CENTER_LEFT" spacing="12">
+        <Label fx:id="lblTitle" text="➕ Ajouter un utilisateur" styleClass="dialog-title"/>
+    </HBox>
+
+    <!-- FORM BODY -->
+    <VBox styleClass="dialog-body" spacing="16">
+        <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
+
+        <!-- Nom -->
+        <VBox spacing="4">
+            <Label text="Nom complet *" styleClass="form-label"/>
+            <TextField fx:id="fieldNom" promptText="Ex: Ahmed Ben Ali" styleClass="form-input"/>
+            <Label fx:id="errNom" styleClass="error-label" visible="false" managed="false"/>
+        </VBox>
+
+        <!-- Email -->
+        <VBox spacing="4">
+            <Label text="Adresse Email *" styleClass="form-label"/>
+            <TextField fx:id="fieldEmail" promptText="exemple@farmiq.com" styleClass="form-input"/>
+            <Label fx:id="errEmail" styleClass="error-label" visible="false" managed="false"/>
+        </VBox>
+
+        <!-- Password -->
+        <VBox spacing="4">
+            <Label fx:id="lblPasswordSection" text="Mot de passe *" styleClass="form-label"/>
+            <PasswordField fx:id="fieldPassword" promptText="Min 8 car, 1 majuscule, 1 chiffre, 1 spécial" styleClass="form-input"/>
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <ProgressBar fx:id="pwdStrengthBar" prefWidth="160" prefHeight="6"/>
+                <Label fx:id="lblPasswordStrength" styleClass="strength-label"/>
+            </HBox>
+            <Label fx:id="errPassword" styleClass="error-label" visible="false" managed="false"/>
+        </VBox>
+
+        <!-- Confirm Password -->
+        <VBox spacing="4">
+            <Label text="Confirmer le mot de passe" styleClass="form-label"/>
+            <PasswordField fx:id="fieldConfirmPassword" promptText="Répéter le mot de passe" styleClass="form-input"/>
+            <Label fx:id="errConfirm" styleClass="error-label" visible="false" managed="false"/>
+        </VBox>
+
+        <!-- Role -->
+        <VBox spacing="4">
+            <Label text="Rôle *" styleClass="form-label"/>
+            <ComboBox fx:id="comboRole" maxWidth="Infinity" styleClass="form-combo"/>
+            <Label fx:id="errRole" styleClass="error-label" visible="false" managed="false"/>
+        </VBox>
+
+        <!-- Statut -->
+        <VBox spacing="4">
+            <Label text="Statut" styleClass="form-label"/>
+            <ComboBox fx:id="comboStatut" maxWidth="Infinity" styleClass="form-combo"/>
+        </VBox>
+
+        <!-- Password Rules Info -->
+        <VBox styleClass="info-box" spacing="4">
+            <Label text="ℹ️ Règles mot de passe:" styleClass="info-title"/>
+            <Label text="• Minimum 8 caractères" styleClass="info-item"/>
+            <Label text="• Au moins 1 lettre majuscule" styleClass="info-item"/>
+            <Label text="• Au moins 1 chiffre" styleClass="info-item"/>
+            <Label text="• Au moins 1 caractère spécial (!@#$%...)" styleClass="info-item"/>
+        </VBox>
+    </VBox>
+
+    <!-- DIALOG FOOTER -->
+    <HBox styleClass="dialog-footer" alignment="CENTER_RIGHT" spacing="12">
+        <padding><Insets top="16" right="24" bottom="16" left="24"/></padding>
+        <Button fx:id="btnCancel" text="Annuler" styleClass="btn-outline" onAction="#handleCancel"/>
+        <Button fx:id="btnSave" text="💾 Enregistrer" styleClass="btn-primary" onAction="#handleSave"
+                defaultButton="true"/>
+    </HBox>
+</VBox>

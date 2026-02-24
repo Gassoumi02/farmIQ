@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.farmiq.controllers.AdminUserController"
+      stylesheets="@../css/admin.css"
+      styleClass="module-container" spacing="0">
+
+    <!-- MODULE HEADER -->
+    <HBox styleClass="module-header" alignment="CENTER_LEFT" spacing="16">
+        <VBox spacing="2">
+            <Label text="👥 Gestion des Utilisateurs" styleClass="module-title"/>
+            <Label text="CRUD complet • Filtres • Tri • Pagination" styleClass="module-subtitle"/>
+        </VBox>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Label fx:id="userNameLabel" styleClass="header-user-label"/>
+    </HBox>
+
+    <!-- STATS CARDS -->
+    <HBox styleClass="stats-row" spacing="16">
+        <padding><Insets top="16" right="20" bottom="8" left="20"/></padding>
+        <VBox styleClass="stat-card stat-blue" HBox.hgrow="ALWAYS">
+            <Label text="TOTAL" styleClass="stat-label"/>
+            <Label fx:id="lblTotalUsers" text="0" styleClass="stat-value"/>
+        </VBox>
+        <VBox styleClass="stat-card stat-green" HBox.hgrow="ALWAYS">
+            <Label text="ACTIFS" styleClass="stat-label"/>
+            <Label fx:id="lblActifs" text="0" styleClass="stat-value"/>
+        </VBox>
+        <VBox styleClass="stat-card stat-red" HBox.hgrow="ALWAYS">
+            <Label text="INACTIFS" styleClass="stat-label"/>
+            <Label fx:id="lblInactifs" text="0" styleClass="stat-value"/>
+        </VBox>
+        <VBox styleClass="stat-card stat-orange" HBox.hgrow="ALWAYS">
+            <Label text="ADMINS" styleClass="stat-label"/>
+            <Label fx:id="lblAdmins" text="0" styleClass="stat-value"/>
+        </VBox>
+    </HBox>
+
+    <!-- TOOLBAR -->
+    <VBox styleClass="toolbar-card" spacing="12">
+        <padding><Insets top="12" right="20" bottom="12" left="20"/></padding>
+
+        <!-- Row 1: Search + Filters -->
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <TextField fx:id="searchField" 
+                       promptText="🔍  Rechercher par nom ou email..." 
+                       styleClass="search-field"
+                       prefWidth="320"/>
+
+            <Label text="Rôle:" styleClass="filter-label"/>
+            <ComboBox fx:id="filterRoleCombo" styleClass="filter-combo" prefWidth="160"/>
+
+            <Label text="Statut:" styleClass="filter-label"/>
+            <ComboBox fx:id="filterStatutCombo" styleClass="filter-combo" prefWidth="130"/>
+
+            <Label text="Trier par:" styleClass="filter-label"/>
+            <ComboBox fx:id="sortCombo" styleClass="filter-combo" prefWidth="180"/>
+        </HBox>
+
+        <!-- Row 2: Action Buttons -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Button fx:id="btnAjouter" text="➕ Ajouter" 
+                    styleClass="btn-primary" onAction="#handleAjouter"/>
+            <Button fx:id="btnModifier" text="✏️ Modifier" 
+                    styleClass="btn-secondary" onAction="#handleModifier" disable="true"/>
+            <Button fx:id="btnSupprimer" text="🗑️ Supprimer" 
+                    styleClass="btn-danger" onAction="#handleSupprimer" disable="true"/>
+            <Button fx:id="btnDesactiver" text="🔒 Désactiver" 
+                    styleClass="btn-warning" onAction="#handleDesactiver" disable="true"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnRafraichir" text="🔄 Rafraîchir" 
+                    styleClass="btn-outline" onAction="#handleRafraichir"/>
+        </HBox>
+    </VBox>
+
+    <!-- TABLE -->
+    <VBox VBox.vgrow="ALWAYS" styleClass="table-card">
+        <padding><Insets top="0" right="20" bottom="16" left="20"/></padding>
+        <TableView fx:id="usersTable" VBox.vgrow="ALWAYS" styleClass="data-table">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+                <TableColumn fx:id="colNom" text="Nom" prefWidth="160"/>
+                <TableColumn fx:id="colEmail" text="Email" prefWidth="220"/>
+                <TableColumn fx:id="colRole" text="Rôle" prefWidth="130"/>
+                <TableColumn fx:id="colStatut" text="Statut" prefWidth="100"/>
+                <TableColumn fx:id="colCreatedAt" text="Créé le" prefWidth="110"/>
+                <TableColumn fx:id="colActions" text="Actions" prefWidth="130"/>
+            </columns>
+            <placeholder>
+                <Label text="Aucun utilisateur trouvé" styleClass="table-placeholder"/>
+            </placeholder>
+        </TableView>
+    </VBox>
+
+    <!-- STATUS BAR -->
+    <HBox styleClass="status-bar" alignment="CENTER_LEFT" spacing="16">
+        <padding><Insets top="8" right="20" bottom="8" left="20"/></padding>
+        <Label fx:id="statusLabel" text="Prêt" styleClass="status-text"/>
+    </HBox>
+</VBox>

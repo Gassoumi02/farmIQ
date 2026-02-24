@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.farmiq.controllers.TransactionController"
+      stylesheets="@../css/admin.css"
+      styleClass="module-container"
+      spacing="0">
+
+    <!-- MODULE HEADER -->
+    <HBox styleClass="module-header" alignment="CENTER_LEFT" spacing="16">
+        <VBox spacing="2">
+            <Label text="💰 Mes Transactions" styleClass="module-title"/>
+            <Label text="Gérez vos achats et ventes agricoles" styleClass="module-subtitle"/>
+        </VBox>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Label fx:id="userNameLabel" styleClass="header-user-label"/>
+    </HBox>
+
+    <!-- STATS CARDS -->
+    <HBox styleClass="stats-row" spacing="16">
+        <padding><Insets top="16" right="20" bottom="8" left="20"/></padding>
+        <VBox styleClass="stat-card stat-blue" HBox.hgrow="ALWAYS">
+            <Label text="TRANSACTIONS" styleClass="stat-label"/>
+            <Label fx:id="totalTransactionsLabel" text="0" styleClass="stat-value"/>
+        </VBox>
+        <VBox styleClass="stat-card stat-green" HBox.hgrow="ALWAYS">
+            <Label text="VENTES (DT)" styleClass="stat-label"/>
+            <Label fx:id="totalVentesLabel" text="0.00" styleClass="stat-value"/>
+        </VBox>
+        <VBox styleClass="stat-card stat-red" HBox.hgrow="ALWAYS">
+            <Label text="ACHATS (DT)" styleClass="stat-label"/>
+            <Label fx:id="totalAchatsLabel" text="0.00" styleClass="stat-value"/>
+        </VBox>
+        <VBox styleClass="stat-card stat-orange" HBox.hgrow="ALWAYS">
+            <Label text="BÉNÉFICE (DT)" styleClass="stat-label"/>
+            <Label fx:id="beneficeLabel" text="0.00" styleClass="stat-value"/>
+        </VBox>
+    </HBox>
+
+    <!-- TOOLBAR -->
+    <VBox styleClass="toolbar-card" spacing="12">
+        <padding><Insets top="12" right="20" bottom="12" left="20"/></padding>
+
+        <!-- Filters row -->
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <TextField fx:id="searchField"
+                       promptText="🔍 Rechercher par description..."
+                       styleClass="search-field" prefWidth="260"/>
+            <Label text="Type:" styleClass="filter-label"/>
+            <ComboBox fx:id="filterTypeCombo" styleClass="filter-combo" prefWidth="140"/>
+            <Label text="Statut:" styleClass="filter-label"/>
+            <ComboBox fx:id="filterStatutCombo" styleClass="filter-combo" prefWidth="140"/>
+            <DatePicker fx:id="filterDateDebut" prefWidth="140"
+                        styleClass="filter-date" promptText="Du"/>
+            <DatePicker fx:id="filterDateFin"   prefWidth="140"
+                        styleClass="filter-date" promptText="Au"/>
+        </HBox>
+
+        <!-- Actions row -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Button fx:id="btnAjouter"   text="➕ Ajouter"   styleClass="btn-primary"   onAction="#handleAjouter"/>
+            <Button fx:id="btnModifier"  text="✏️ Modifier"  styleClass="btn-secondary" onAction="#handleModifier"  disable="true"/>
+            <Button fx:id="btnSupprimer" text="🗑️ Supprimer" styleClass="btn-danger"    onAction="#handleSupprimer" disable="true"/>
+            <Button fx:id="btnDetails"   text="👁 Détails"   styleClass="btn-outline"   onAction="#handleDetails"   disable="true"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnExporter"  text="📥 CSV"       styleClass="btn-outline"   onAction="#handleExporter"/>
+            <Button fx:id="btnRapport"   text="📊 PDF"       styleClass="btn-outline"   onAction="#handleRapport"/>
+            <Button fx:id="btnRafraichir" text="🔄"          styleClass="btn-outline"   onAction="#handleRafraichir"/>
+        </HBox>
+    </VBox>
+
+    <!-- TABLE -->
+    <VBox VBox.vgrow="ALWAYS" styleClass="table-card">
+        <padding><Insets top="0" right="20" bottom="16" left="20"/></padding>
+        <TableView fx:id="transactionsTable" VBox.vgrow="ALWAYS" styleClass="data-table">
+            <columns>
+                <TableColumn fx:id="colId"          text="ID"           prefWidth="60"/>
+                <TableColumn fx:id="colType"         text="Type"         prefWidth="110"/>
+                <TableColumn fx:id="colMontant"      text="Montant (DT)" prefWidth="130"/>
+                <TableColumn fx:id="colDate"         text="Date"         prefWidth="110"/>
+                <TableColumn fx:id="colStatut"       text="Statut"       prefWidth="120"/>
+                <TableColumn fx:id="colDescription"  text="Description"  prefWidth="340"/>
+            </columns>
+            <placeholder>
+                <Label text="Aucune transaction trouvée" styleClass="table-placeholder"/>
+            </placeholder>
+        </TableView>
+    </VBox>
+
+    <!-- STATUS BAR -->
+    <HBox styleClass="status-bar" alignment="CENTER_LEFT" spacing="16">
+        <padding><Insets top="8" right="20" bottom="8" left="20"/></padding>
+        <Label fx:id="statusLabel"    text="Prêt" styleClass="status-text"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Label fx:id="selectionLabel" text=""     styleClass="status-text"/>
+    </HBox>
+
+</VBox>

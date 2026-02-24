@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.farmiq.controllers.ProfilController"
+      spacing="20"
+      styleClass="content-wrapper">
+
+    <padding>
+        <Insets top="24" right="32" bottom="24" left="32"/>
+    </padding>
+
+    <!-- Header Section -->
+    <HBox alignment="CENTER_LEFT" spacing="16">
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="⚙️ Mon Profil" styleClass="section-title"/>
+            <Label text="Gérez vos informations personnelles et votre compte" styleClass="section-subtitle"/>
+        </VBox>
+    </HBox>
+
+    <Separator styleClass="content-separator"/>
+
+    <!-- Profile Content -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="transparent-scroll">
+        <VBox spacing="24">
+            <padding>
+                <Insets top="8" right="8" bottom="8" left="8"/>
+            </padding>
+
+            <!-- User Avatar and Basic Info Card -->
+            <VBox styleClass="card" spacing="20">
+                <padding>
+                    <Insets top="24" right="24" bottom="24" left="24"/>
+                </padding>
+
+                <Label text="Informations du Compte" styleClass="card-title"/>
+
+                <HBox spacing="24" alignment="CENTER_LEFT">
+                    <!-- Avatar -->
+                    <VBox alignment="CENTER" spacing="12">
+                        <VBox alignment="CENTER" styleClass="profile-avatar-large">
+                            <Label text="👤" style="-fx-font-size: 42px;"/>
+                        </VBox>
+                        <Label fx:id="lblUserName" text="Nom Utilisateur" styleClass="profile-name"/>
+                        <Label fx:id="lblUserRole" text="AGRICULTEUR" styleClass="profile-role"/>
+                    </VBox>
+
+                    <Separator orientation="VERTICAL"/>
+
+                    <!-- User Details -->
+                    <VBox spacing="16" HBox.hgrow="ALWAYS">
+                        <!-- ID -->
+                        <VBox spacing="4">
+                            <Label text="ID Utilisateur" styleClass="field-label"/>
+                            <Label fx:id="lblUserId" text="#12345" styleClass="field-value"/>
+                        </VBox>
+
+                        <!-- Email -->
+                        <VBox spacing="4">
+                            <Label text="Adresse Email" styleClass="field-label"/>
+                            <Label fx:id="lblEmail" text="user@farmiq.com" styleClass="field-value"/>
+                        </VBox>
+
+                        <!-- Status -->
+                        <VBox spacing="4">
+                            <Label text="Statut du Compte" styleClass="field-label"/>
+                            <HBox spacing="8" alignment="CENTER_LEFT">
+                                <Label fx:id="lblStatut" text="🟢 ACTIF" styleClass="field-value-success"/>
+                            </HBox>
+                        </VBox>
+
+                        <!-- Member Since -->
+                        <VBox spacing="4">
+                            <Label text="Membre depuis" styleClass="field-label"/>
+                            <Label fx:id="lblMemberSince" text="15 Janvier 2025" styleClass="field-value"/>
+                        </VBox>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Edit Profile Card -->
+            <VBox styleClass="card" spacing="20">
+                <padding>
+                    <Insets top="24" right="24" bottom="24" left="24"/>
+                </padding>
+
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label text="Modifier les Informations" styleClass="card-title" HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="btnEdit" text="✏️ Éditer" styleClass="btn-primary" onAction="#handleEdit"/>
+                </HBox>
+
+                <Separator styleClass="light-separator"/>
+
+                <!-- Edit Form -->
+                <GridPane hgap="16" vgap="16" fx:id="editForm" visible="false" managed="false">
+                    <!-- Name Field -->
+                    <Label text="Nom complet *" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <TextField fx:id="txtNom" promptText="Votre nom complet" styleClass="form-input"
+                               GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+
+                    <!-- Email Field -->
+                    <Label text="Email *" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                    <TextField fx:id="txtEmail" promptText="votre.email@example.com" styleClass="form-input"
+                               GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                    <!-- Action Buttons -->
+                    <HBox spacing="12" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
+                        <Button fx:id="btnSave" text="💾 Enregistrer" styleClass="btn-success" onAction="#handleSave"/>
+                        <Button fx:id="btnCancel" text="❌ Annuler" styleClass="btn-secondary" onAction="#handleCancel"/>
+                    </HBox>
+                </GridPane>
+
+                <!-- View Mode Info -->
+                <VBox spacing="12" fx:id="viewInfo" visible="true" managed="true">
+                    <Label text="Pour modifier vos informations, cliquez sur le bouton 'Éditer' ci-dessus."
+                           styleClass="help-text"/>
+                </VBox>
+            </VBox>
+
+            <!-- Change Password Card -->
+            <VBox styleClass="card" spacing="20">
+                <padding>
+                    <Insets top="24" right="24" bottom="24" left="24"/>
+                </padding>
+
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label text="Changer le Mot de Passe" styleClass="card-title" HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="btnChangePassword" text="🔐 Modifier" styleClass="btn-warning"
+                            onAction="#handleShowPasswordChange"/>
+                </HBox>
+
+                <Separator styleClass="light-separator"/>
+
+                <!-- Password Change Form -->
+                <GridPane hgap="16" vgap="16" fx:id="passwordForm" visible="false" managed="false">
+                    <!-- Current Password -->
+                    <Label text="Mot de passe actuel *" styleClass="field-label"
+                           GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <HBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <PasswordField fx:id="txtCurrentPassword" promptText="Votre mot de passe actuel"
+                                       styleClass="form-input" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+
+                    <!-- New Password -->
+                    <Label text="Nouveau mot de passe *" styleClass="field-label"
+                           GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                    <HBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                        <PasswordField fx:id="txtNewPassword" promptText="Nouveau mot de passe (min. 6 caractères)"
+                                       styleClass="form-input" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+
+                    <!-- Confirm Password -->
+                    <Label text="Confirmer le nouveau mot de passe *" styleClass="field-label"
+                           GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                    <HBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="5">
+                        <PasswordField fx:id="txtConfirmPassword" promptText="Confirmer le nouveau mot de passe"
+                                       styleClass="form-input" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+
+                    <!-- Password Requirements -->
+                    <VBox spacing="6" styleClass="info-box"
+                          GridPane.columnIndex="0" GridPane.rowIndex="6" GridPane.columnSpan="2">
+                        <Label text="ℹ️ Exigences du mot de passe :" styleClass="info-text-bold"/>
+                        <Label text="• Au moins 6 caractères" styleClass="info-text"/>
+                        <Label text="• Recommandé : mélange de lettres, chiffres et symboles" styleClass="info-text"/>
+                    </VBox>
+
+                    <!-- Action Buttons -->
+                    <HBox spacing="12" GridPane.columnIndex="0" GridPane.rowIndex="7" GridPane.columnSpan="2">
+                        <Button fx:id="btnSavePassword" text="🔐 Changer le mot de passe"
+                                styleClass="btn-success" onAction="#handleSavePassword"/>
+                        <Button fx:id="btnCancelPassword" text="❌ Annuler"
+                                styleClass="btn-secondary" onAction="#handleCancelPassword"/>
+                    </HBox>
+                </GridPane>
+
+                <!-- Password View Mode -->
+                <VBox spacing="12" fx:id="passwordViewInfo" visible="true" managed="true">
+                    <Label text="Pour des raisons de sécurité, changez régulièrement votre mot de passe."
+                           styleClass="help-text"/>
+                    <Label text="Dernière modification : Non disponible" styleClass="help-text-small"
+                           fx:id="lblLastPasswordChange"/>
+                </VBox>
+            </VBox>
+
+            <!-- Account Security Info Card -->
+            <VBox styleClass="card-info" spacing="12">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+
+                <Label text="🛡️ Sécurité du Compte" styleClass="card-title-small"/>
+                <Label text="Votre compte est protégé par les meilleures pratiques de sécurité FarmIQ."
+                       styleClass="help-text" wrapText="true"/>
+                <Label text="En cas de problème, contactez votre administrateur système."
+                       styleClass="help-text" wrapText="true"/>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+</VBox>

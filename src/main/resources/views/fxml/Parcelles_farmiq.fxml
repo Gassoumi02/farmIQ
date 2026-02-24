@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.farmiq.controllers.ParcellesController"
+      spacing="20"
+      styleClass="content-wrapper">
+
+    <padding>
+        <Insets top="24" right="32" bottom="24" left="32"/>
+    </padding>
+
+    <!-- Header Section -->
+    <HBox alignment="CENTER_LEFT" spacing="16">
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="🟫 Gestion des Parcelles" styleClass="section-title"/>
+            <Label text="Gérez vos terres agricoles et optimisez vos cultures" styleClass="section-subtitle"/>
+        </VBox>
+        <Button fx:id="btnRefresh" text="🔄 Actualiser" styleClass="btn-secondary"
+                onAction="#handleRefresh"/>
+        <Button fx:id="btnRetourPlantes" text="🌱 Retour aux Plantes" styleClass="btn-primary"
+                onAction="#handleRetourPlantes"/>
+    </HBox>
+
+    <Separator styleClass="content-separator"/>
+
+    <!-- Main Content -->
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
+
+        <!-- Left Panel: Form -->
+        <VBox spacing="16" prefWidth="380" styleClass="card">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <Label text="📝 Formulaire Parcelle" styleClass="card-title"/>
+            <Separator styleClass="light-separator"/>
+
+            <!-- Nom Parcelle -->
+            <VBox spacing="6">
+                <Label text="Nom de la parcelle *" styleClass="field-label"/>
+                <TextField fx:id="txtNomParcelle" promptText="Ex: Parcelle Nord, Champ Principal..."
+                           styleClass="form-input"/>
+            </VBox>
+
+            <!-- Surface -->
+            <VBox spacing="6">
+                <Label text="Surface (m²) *" styleClass="field-label"/>
+                <TextField fx:id="txtSurface" promptText="Ex: 5000, 2500..."
+                           styleClass="form-input"/>
+            </VBox>
+
+            <!-- Localisation -->
+            <VBox spacing="6">
+                <Label text="Localisation" styleClass="field-label"/>
+                <TextField fx:id="txtLocalisation" promptText="Ex: Zone Nord, Secteur A..."
+                           styleClass="form-input"/>
+            </VBox>
+
+            <!-- Type de Sol -->
+            <VBox spacing="6">
+                <Label text="Type de sol" styleClass="field-label"/>
+                <TextField fx:id="txtTypeSol" promptText="Ex: Argileux, Sableux, Limoneux..."
+                           styleClass="form-input"/>
+            </VBox>
+
+            <!-- État Parcelle -->
+            <VBox spacing="6">
+                <Label text="État de la parcelle *" styleClass="field-label"/>
+                <ComboBox fx:id="cbEtatParcelle" styleClass="form-input"
+                          promptText="Sélectionner un état" prefWidth="340"/>
+            </VBox>
+
+            <!-- Date Dernière Culture -->
+            <VBox spacing="6">
+                <Label text="Date dernière culture" styleClass="field-label"/>
+                <DatePicker fx:id="dpDerniereCulture" styleClass="form-input"
+                            promptText="Sélectionner une date"/>
+            </VBox>
+
+            <!-- Irrigation -->
+            <CheckBox fx:id="chkIrrigation" text="Irrigation disponible"
+                      styleClass="form-checkbox"/>
+
+            <!-- Plante Associée -->
+            <VBox spacing="6">
+                <Label text="Plante cultivée (optionnel)" styleClass="field-label"/>
+                <ComboBox fx:id="cbPlante" styleClass="form-input"
+                          promptText="Aucune plante" prefWidth="340"/>
+            </VBox>
+
+            <!-- Remarques -->
+            <VBox spacing="6">
+                <Label text="Remarques" styleClass="field-label"/>
+                <TextArea fx:id="txtRemarques" promptText="Notes, observations..."
+                          prefRowCount="3" wrapText="true" styleClass="form-input"/>
+            </VBox>
+
+            <Separator styleClass="light-separator"/>
+
+            <!-- Buttons -->
+            <HBox spacing="12">
+                <Button fx:id="btnAjouter" text="➕ Ajouter" styleClass="btn-success"
+                        onAction="#handleAjouter" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                <Button fx:id="btnModifier" text="✏️ Modifier" styleClass="btn-primary"
+                        onAction="#handleModifier" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            </HBox>
+
+            <HBox spacing="12">
+                <Button fx:id="btnSupprimer" text="🗑️ Supprimer" styleClass="btn-danger"
+                        onAction="#handleSupprimer" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                <Button fx:id="btnVider" text="🔄 Vider" styleClass="btn-secondary"
+                        onAction="#handleVider" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            </HBox>
+
+            <VBox styleClass="info-box" spacing="6">
+                <Label text="💡 Astuce" styleClass="info-text-bold"/>
+                <Label text="Cliquez sur une parcelle dans la liste pour remplir le formulaire automatiquement."
+                       styleClass="info-text" wrapText="true"/>
+            </VBox>
+        </VBox>
+
+        <!-- Right Panel: Table -->
+        <VBox spacing="16" HBox.hgrow="ALWAYS" styleClass="card">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="📋 Liste des Parcelles" styleClass="card-title" HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblCount" text="0 parcelle(s)" styleClass="badge-info"/>
+            </HBox>
+
+            <Separator styleClass="light-separator"/>
+
+            <!-- Stats Bar -->
+            <HBox spacing="16" alignment="CENTER" styleClass="stats-bar">
+                <VBox alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="📏" style="-fx-font-size: 20px;"/>
+                    <Label fx:id="lblSurfaceTotale" text="0 m²" styleClass="stat-number"/>
+                    <Label text="Surface Totale" styleClass="stat-label"/>
+                </VBox>
+
+                <Separator orientation="VERTICAL"/>
+
+                <VBox alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="✅" style="-fx-font-size: 20px;"/>
+                    <Label fx:id="lblDisponibles" text="0" styleClass="stat-number"/>
+                    <Label text="Disponibles" styleClass="stat-label"/>
+                </VBox>
+
+                <Separator orientation="VERTICAL"/>
+
+                <VBox alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="🌾" style="-fx-font-size: 20px;"/>
+                    <Label fx:id="lblEnCulture" text="0" styleClass="stat-number"/>
+                    <Label text="En Culture" styleClass="stat-label"/>
+                </VBox>
+
+                <Separator orientation="VERTICAL"/>
+
+                <VBox alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="💧" style="-fx-font-size: 20px;"/>
+                    <Label fx:id="lblAvecIrrigation" text="0" styleClass="stat-number"/>
+                    <Label text="Avec Irrigation" styleClass="stat-label"/>
+                </VBox>
+            </HBox>
+
+            <!-- Table -->
+            <TableView fx:id="tableParcelles" VBox.vgrow="ALWAYS" styleClass="data-table">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="50"
+                                 styleClass="table-col-center"/>
+                    <TableColumn fx:id="colNom" text="Nom Parcelle" prefWidth="150"/>
+                    <TableColumn fx:id="colSurface" text="Surface (m²)" prefWidth="100"
+                                 styleClass="table-col-center"/>
+                    <TableColumn fx:id="colLocalisation" text="Localisation" prefWidth="120"/>
+                    <TableColumn fx:id="colTypeSol" text="Type Sol" prefWidth="100"/>
+                    <TableColumn fx:id="colEtat" text="État" prefWidth="120"/>
+                    <TableColumn fx:id="colDateCulture" text="Dernière Culture" prefWidth="120"
+                                 styleClass="table-col-center"/>
+                    <TableColumn fx:id="colIrrigation" text="Irrigation" prefWidth="90"
+                                 styleClass="table-col-center"/>
+                    <TableColumn fx:id="colPlante" text="Plante" prefWidth="100"/>
+                </columns>
+                <placeholder>
+                    <Label text="📭 Aucune parcelle enregistrée"
+                           style="-fx-text-fill: #95a5a6; -fx-font-size: 14px;"/>
+                </placeholder>
+            </TableView>
+
+        </VBox>
+
+    </HBox>
+
+</VBox>

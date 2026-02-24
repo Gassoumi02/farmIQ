@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
+           fx:controller="com.farmiq.controllers.SettingsController"
+           style="-fx-background-color: #F5F5F5;">
+    
+    <ScrollPane fitToWidth="true" fitToHeight="true" 
+                AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+        <VBox spacing="20" style="-fx-padding: 20;">
+            
+            <!-- Header -->
+            <Label text="⚙️ Paramètres" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;"/>
+            
+            <!-- TabPane -->
+            <TabPane tabClosingPolicy="UNAVAILABLE">
+                
+                <!-- Tab: Profil -->
+                <Tab text="👤 Profil">
+                    <VBox spacing="15" style="-fx-padding: 20;">
+                        <Label text="Informations du profil" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        
+                        <HBox spacing="20">
+                            <!-- Avatar -->
+                            <VBox spacing="10">
+                                <ImageView fx:id="imgAvatar" fitWidth="100" fitHeight="100" 
+                                          style="-fx-background-color: #E0E0E0; -fx-background-radius: 50;"/>
+                                <Button fx:id="btnUploadPhoto" text="📷 Changer la photo" onAction="#onUploadPhoto"
+                                        style="-fx-background-color: #1565C0; -fx-text-fill: white; -fx-background-radius: 4;"/>
+                            </VBox>
+                            
+                            <!-- Form -->
+                            <VBox spacing="10" HBox.hgrow="ALWAYS">
+                                <Label text="Nom complet:"/>
+                                <TextField fx:id="txtNom" promptText="Entrez votre nom"/>
+                                
+                                <Label text="Email:"/>
+                                <TextField fx:id="txtEmail" promptText="Entrez votre email"/>
+                                
+                                <Label fx:id="lblLastLogin" text="Dernière connexion: " 
+                                       style="-fx-text-fill: #757575; -fx-font-size: 12px;"/>
+                            </VBox>
+                        </HBox>
+                        
+                        <Separator/>
+                        
+                        <Label text="Changer le mot de passe" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                        
+                        <GridPane hgap="10" vgap="10">
+                            <Label text="Mot de passe actuel:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                            <PasswordField fx:id="txtCurrentPassword" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                            
+                            <Label text="Nouveau mot de passe:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                            <PasswordField fx:id="txtNewPassword" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                            
+                            <Label text="Confirmer le mot de passe:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                            <PasswordField fx:id="txtConfirmPassword" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                        </GridPane>
+                        
+                        <Button fx:id="btnSaveProfile" text="💾 Enregistrer" onAction="#onSaveProfile"
+                                style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+                    </VBox>
+                </Tab>
+                
+                <!-- Tab: Boutique -->
+                <Tab text="🏪 Boutique">
+                    <VBox spacing="15" style="-fx-padding: 20;">
+                        <Label text="Paramètres de la boutique" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        
+                        <HBox spacing="20">
+                            <!-- Logo -->
+                            <VBox spacing="10">
+                                <ImageView fx:id="imgLogo" fitWidth="120" fitHeight="120" 
+                                          style="-fx-background-color: #E0E0E0; -fx-background-radius: 8;"/>
+                                <Button fx:id="btnUploadLogo" text="🖼️ Changer le logo" onAction="#onUploadLogo"
+                                        style="-fx-background-color: #1565C0; -fx-text-fill: white; -fx-background-radius: 4;"/>
+                            </VBox>
+                            
+                            <!-- Form -->
+                            <VBox spacing="10" HBox.hgrow="ALWAYS">
+                                <Label text="Nom de la boutique:"/>
+                                <TextField fx:id="txtNomBoutique" promptText="Entrez le nom de votre boutique"/>
+                                
+                                <Label text="Description:"/>
+                                <TextArea fx:id="txtDescriptionBoutique" prefRowCount="3" 
+                                         promptText="Décrivez votre boutique"/>
+                                
+                                <Label text="Wilaya:"/>
+                                <ComboBox fx:id="cmbWilaya" prefWidth="200"/>
+                            </VBox>
+                        </HBox>
+                        
+                        <GridPane hgap="10" vgap="10">
+                            <Label text="Adresse:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                            <TextField fx:id="txtAdresse" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                            
+                            <Label text="Téléphone:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                            <TextField fx:id="txtTelephone" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        </GridPane>
+                        
+                        <Separator/>
+                        
+                        <HBox spacing="20">
+                            <VBox>
+                                <Label text="Note moyenne:" style="-fx-text-fill: #757575;"/>
+                                <Label fx:id="lblNoteMoyenne" text="Pas encore noté" 
+                                       style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                            </VBox>
+                            <VBox>
+                                <Label text="Total des ventes:" style="-fx-text-fill: #757575;"/>
+                                <Label fx:id="lblTotalVentes" text="0" 
+                                       style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                            </VBox>
+                        </HBox>
+                        
+                        <Button fx:id="btnSaveBoutique" text="💾 Enregistrer la boutique" onAction="#onSaveBoutique"
+                                style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+                    </VBox>
+                </Tab>
+                
+                <!-- Tab: Préférences -->
+                <Tab text="🎨 Préférences">
+                    <VBox spacing="15" style="-fx-padding: 20;">
+                        <Label text="Préférences de l'application" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        
+                        <Label text="Thème:"/>
+                        <ToggleGroup fx:id="themeGroup">
+                            <RadioButton fx:id="rbLightTheme" text="☀️ Clair" toggleGroup="$themeGroup" selected="true"/>
+                            <RadioButton fx:id="rbDarkTheme" text="🌙 Sombre" toggleGroup="$themeGroup"/>
+                        </ToggleGroup>
+                        
+                        <Separator/>
+                        
+                        <Label text="Langue:"/>
+                        <ComboBox fx:id="cmbLanguage" prefWidth="200"/>
+                        
+                        <Separator/>
+                        
+                        <Label text="Localisation météo:"/>
+                        <TextField fx:id="txtWeatherCity" promptText="Ville pour la météo (ex: Tunis)"/>
+                        
+                        <Button fx:id="btnSavePreferences" text="💾 Enregistrer les préférences" onAction="#onSavePreferences"
+                                style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+                    </VBox>
+                </Tab>
+                
+                <!-- Tab: Sécurité -->
+                <Tab text="🔒 Sécurité">
+                    <VBox spacing="15" style="-fx-padding: 20;">
+                        <Label text="Informations de session" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        
+                        <VBox spacing="5">
+                            <Label text="ID de session:" style="-fx-text-fill: #757575;"/>
+                            <Label fx:id="lblSessionId" text="ID: -" style="-fx-font-family: monospace;"/>
+                        </VBox>
+                        
+                        <VBox spacing="5">
+                            <Label text="Début de session:" style="-fx-text-fill: #757575;"/>
+                            <Label fx:id="lblSessionStart" text="Début: -"/>
+                        </VBox>
+                        
+                        <VBox spacing="5">
+                            <Label text="Adresse IP:" style="-fx-text-fill: #757575;"/>
+                            <Label fx:id="lblIpAddress" text="IP: -"/>
+                        </VBox>
+                        
+                        <Separator/>
+                        
+                        <HBox spacing="10">
+                            <Button fx:id="btnLogout" text="🚪 Déconnexion" onAction="#onLogout"
+                                    style="-x-background-color: #F57C00; -fx-text-fill: white; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+                            
+                            <Button fx:id="btnLogoutAll" text="🚪 Déconnexion globale" onAction="#onLogoutAll"
+                                    style="-fx-background-color: #C62828; -fx-text-fill: white; -fx-background-radius: 4; -fx-padding: 10 20;"/>
+                        </HBox>
+                    </VBox>
+                </Tab>
+                
+            </TabPane>
+            
+        </VBox>
+    </ScrollPane>
+</ AnchorPane>

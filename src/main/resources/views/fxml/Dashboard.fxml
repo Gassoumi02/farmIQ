@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
+           fx:controller="com.farmiq.controllers.DashboardController"
+           style="-fx-background-color: #F5F5F5;">
+    
+    <ScrollPane fitToWidth="true" fitToHeight="true" 
+                AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+        <VBox spacing="20" style="-fx-padding: 20;">
+            
+            <!-- Header -->
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="📊 Tableau de Bord" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="🔄 Actualiser" onAction="#refreshData" 
+                        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 4;"/>
+            </HBox>
+            
+            <!-- KPI Cards Row 1 -->
+            <GridPane hgap="15" vgap="15">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="25"/>
+                    <ColumnConstraints percentWidth="25"/>
+                    <ColumnConstraints percentWidth="25"/>
+                    <ColumnConstraints percentWidth="25"/>
+                </columnConstraints>
+                
+                <!-- Ventes ce mois -->
+                <VBox GridPane.columnIndex="0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                    <Label text="💰 Ventes ce mois" style="-fx-font-size: 12px; -fx-text-fill: #757575;"/>
+                    <Label fx:id="lblVentesMoins" text="12 450,00 TND" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;"/>
+                </VBox>
+                
+                <!-- Achats ce mois -->
+                <VBox GridPane.columnIndex="1" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                    <Label text="🛒 Achats ce mois" style="-fx-font-size: 12px; -fx-text-fill: #757575;"/>
+                    <Label fx:id="lblAchatsMois" text="8 320,00 TND" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1565C0;"/>
+                </VBox>
+                
+                <!-- Bénéfice Net -->
+                <VBox GridPane.columnIndex="2" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                    <Label text="📈 Bénéfice Net" style="-fx-font-size: 12px; -fx-text-fill: #757575;"/>
+                    <Label fx:id="lblBeneficeNet" text="4 130,00 TND" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;"/>
+                </VBox>
+                
+                <!-- Utilisateurs actifs -->
+                <VBox GridPane.columnIndex="3" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                    <Label text="👥 Utilisateurs actifs" style="-fx-font-size: 12px; -fx-text-fill: #757575;"/>
+                    <Label fx:id="lblUtilisateursActifs" text="24" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #7B1FA2;"/>
+                </VBox>
+            </GridPane>
+            
+            <!-- KPI Cards Row 2 -->
+            <GridPane hgap="15" vgap="15">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="25"/>
+                    <ColumnConstraints percentWidth="25"/>
+                    <ColumnConstraints percentWidth="25"/>
+                    <ColumnConstraints percentWidth="25"/>
+                </columnConstraints>
+                
+                <!-- Produits en alerte -->
+                <VBox GridPane.columnIndex="0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                    <Label text="⚠️ Produits en alerte" style="-fx-font-size: 12px; -fx-text-fill: #757575;"/>
+                    <Label fx:id="lblProduitsAlerte" text="3" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #F57F17;"/>
+                </VBox>
+                
+                <!-- Commandes en attente -->
+                <VBox GridPane.columnIndex="1" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                    <Label text="📦 Commandes en attente" style="-fx-font-size: 12px; -fx-text-fill: #757575;"/>
+                    <Label fx:id="lblCommandesEnAttente" text="5" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1565C0;"/>
+                </VBox>
+                
+                <!-- Nouvelles annonces -->
+                <VBox GridPane.columnIndex="2" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                    <Label text="🆕 Nouvelles annonces" style="-fx-font-size: 12px; -fx-text-fill: #757575;"/>
+                    <Label fx:id="lblNouvellesAnnonces" text="8" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;"/>
+                </VBox>
+                
+                <!-- Weather Widget -->
+                <VBox GridPane.columnIndex="3" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                    <Label text="🌦️ Météo" style="-fx-font-size: 12px; -fx-text-fill: #757575;"/>
+                    <HBox spacing="5" alignment="CENTER_LEFT">
+                        <Label fx:id="lblWeatherIcon" text="☀️" style="-fx-font-size: 24px;"/>
+                        <VBox>
+                            <Label fx:id="lblWeatherTemp" text="18°C" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                            <Label fx:id="lblWeatherCity" text="Tunis" style="-fx-font-size: 10px; -fx-text-fill: #757575;"/>
+                        </VBox>
+                    </HBox>
+                    <Label fx:id="lblWeatherDesc" text="Ciel dégagé" style="-fx-font-size: 10px; -fx-text-fill: #757575;"/>
+                </VBox>
+            </GridPane>
+            
+            <!-- Charts Row -->
+            <HBox spacing="20" VBox.vgrow="ALWAYS">
+                <!-- Revenue Chart -->
+                <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                    <Label text="Revenus des 6 derniers mois" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                    <LineChart fx:id="chartRevenus" VBox.vgrow="ALWAYS" legendVisible="false">
+                        <xAxis>
+                            <CategoryAxis side="BOTTOM" tickLabelRotation="45"/>
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis side="LEFT" label="TND"/>
+                        </yAxis>
+                    </LineChart>
+                </VBox>
+                
+                <!-- Categories Chart -->
+                <VBox HBox.hgrow="ALWAYS" minWidth="300" style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                    <Label text="Répartition par catégorie" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                    <PieChart fx:id="chartCategories" VBox.vgrow="ALWAYS"/>
+                </VBox>
+            </HBox>
+            
+            <!-- Recent Transactions Table -->
+            <VBox style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                <Label text="📋 Transactions Récentes" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                <TableView fx:id="tableRecentTransactions" VBox.vgrow="ALWAYS" maxHeight="200">
+                    <columns>
+                        <TableColumn fx:id="colTransactionDate" text="Date" prefWidth="120"/>
+                        <TableColumn fx:id="colTransactionType" text="Type" prefWidth="100"/>
+                        <TableColumn fx:id="colTransactionMontant" text="Montant" prefWidth="150"/>
+                        <TableColumn fx:id="colTransactionStatut" text="Statut" prefWidth="100"/>
+                    </columns>
+                </TableView>
+            </VBox>
+            
+        </VBox>
+    </ScrollPane>
+</AnchorPane>
